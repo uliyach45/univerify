@@ -3,83 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniVerify — Register</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css">
+    <title>UniVerify — Create Account</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #0a0a0a; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Segoe UI', sans-serif; padding: 20px 0; }
-        .register-wrapper { width: 100%; max-width: 480px; padding: 20px; }
-        .logo-area { text-align: center; margin-bottom: 30px; }
-        .logo-title { color: #00ff41; font-size: 1.8rem; font-weight: 800; letter-spacing: 2px; }
-        .logo-sub { color: #555; font-size: 0.85rem; }
-        .card { background: #111; border: 1px solid #222; border-radius: 16px; padding: 36px; }
-        .card-title { color: #e0e0e0; font-size: 1.3rem; font-weight: 600; margin-bottom: 24px; }
-        .form-label { color: #888; font-size: 0.85rem; margin-bottom: 6px; }
-        .form-control, .form-select { background: #1a1a1a; border: 1px solid #333; color: #e0e0e0; border-radius: 8px; padding: 11px 16px; font-size: 0.9rem; }
-        .form-control:focus, .form-select:focus { background: #1a1a1a; border-color: #00ff41; color: #e0e0e0; box-shadow: 0 0 0 3px rgba(0,255,65,0.1); }
-        .form-select option { background: #1a1a1a; }
-        .role-selector { display: flex; gap: 10px; margin-bottom: 4px; }
-        .role-option { flex: 1; background: #1a1a1a; border: 2px solid #333; border-radius: 8px; padding: 12px 8px; text-align: center; cursor: pointer; transition: all 0.2s; }
-        .role-option.selected { border-color: #00ff41; background: #0d1a0d; }
-        .role-option span { display: block; font-size: 1.5rem; margin-bottom: 4px; }
-        .role-option p { color: #888; font-size: 0.78rem; margin: 0; }
-        .role-option.selected p { color: #00ff41; }
-        .btn-register { background: #00ff41; color: #000; font-weight: 700; border: none; border-radius: 8px; padding: 13px; width: 100%; font-size: 1rem; margin-top: 8px; cursor: pointer; }
-        .btn-register:hover { background: #00cc33; }
-        .login-link { text-align: center; margin-top: 20px; }
-        .login-link a { color: #00ff41; text-decoration: none; font-size: 0.9rem; }
-        .alert-error { background: #1f0d0d; border: 1px solid #ff4444; color: #ff6666; border-radius: 8px; padding: 12px; margin-bottom: 20px; font-size: 0.85rem; }
-        .alert-success { background: #0d1f0d; border: 1px solid #00ff41; color: #00ff41; border-radius: 8px; padding: 12px; margin-bottom: 20px; font-size: 0.85rem; }
+        :root{--bg:#050d1a;--bg-card:#0c1829;--bg-input:#0a1520;--border:rgba(255,255,255,0.08);--accent:#2563eb;--accent-2:#1d4ed8;--accent-glow:rgba(37,99,235,0.25);--text-1:#ffffff;--text-2:#94a3b8;--text-3:#475569;--success:#22c55e;--error:#ef4444;}
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        body{background:var(--bg);min-height:100vh;display:grid;grid-template-columns:520px 1fr;font-family:'Inter',sans-serif;color:var(--text-1);overflow:hidden;}
+        .form-panel{background:var(--bg-card);border-right:1px solid var(--border);display:flex;flex-direction:column;min-height:100vh;position:relative;animation:slideIn 0.4s ease both;}
+        @keyframes slideIn{from{transform:translateX(-20px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+        .form-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),#60a5fa,var(--accent));}
+        .form-scroll{flex:1;overflow-y:auto;padding:36px 44px 24px;display:flex;flex-direction:column;}
+        .brand{display:flex;align-items:center;gap:10px;margin-bottom:36px;}
+        .brand-logo{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+        .brand-logo svg{width:18px;height:18px;color:#fff;}
+        .brand-name{font-size:1.15rem;font-weight:700;letter-spacing:-0.01em;}
+        .tab-bar{display:grid;grid-template-columns:1fr 1fr;background:var(--bg-input);border:1px solid var(--border);border-radius:10px;padding:4px;margin-bottom:28px;}
+        .tab-btn{background:transparent;border:none;border-radius:7px;padding:10px;font-size:0.88rem;font-weight:500;font-family:'Inter',sans-serif;color:var(--text-3);cursor:pointer;transition:all 0.2s;}
+        .tab-btn.active{background:var(--accent);color:#fff;}
+        .form-heading{font-size:1.3rem;font-weight:700;color:var(--text-1);letter-spacing:-0.02em;margin-bottom:4px;}
+        .form-subheading{font-size:0.84rem;color:var(--text-2);margin-bottom:24px;}
+        .section-label{font-size:0.72rem;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;}
+        .role-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:24px;}
+        .role-card{background:var(--bg-input);border:1px solid var(--border);border-radius:10px;padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.18s;user-select:none;}
+        .role-card:hover{border-color:rgba(37,99,235,0.4);}
+        .role-card.active{background:rgba(37,99,235,0.12);border-color:var(--accent);}
+        .role-card svg{display:block;margin:0 auto 6px;color:var(--text-3);width:18px;height:18px;transition:color 0.18s;}
+        .role-card.active svg{color:#60a5fa;}
+        .role-name{font-size:0.78rem;font-weight:500;color:var(--text-2);}
+        .role-card.active .role-name{color:#60a5fa;}
+        .role-desc{font-size:0.68rem;color:var(--text-3);margin-top:2px;}
+        .fields-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+        .field{margin-bottom:14px;}
+        .field label{display:block;font-size:0.8rem;font-weight:500;color:var(--text-2);margin-bottom:6px;}
+        .field input,.field select{width:100%;background:var(--bg-input);border:1px solid var(--border);border-radius:8px;color:var(--text-1);padding:11px 14px;font-size:0.88rem;font-family:'Inter',sans-serif;outline:none;transition:border-color 0.15s,box-shadow 0.15s;}
+        .field input::placeholder{color:var(--text-3);}
+        .field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);}
+        .field select{appearance:none;cursor:pointer;}
+        .field select option{background:#0c1829;color:var(--text-1);}
+        .pw-wrap{position:relative;}
+        .pw-wrap input{padding-right:44px;}
+        .pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-3);display:flex;align-items:center;padding:4px;transition:color 0.15s;}
+        .pw-toggle:hover{color:var(--text-2);}
+        .alert-err{background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:11px 14px;margin-bottom:14px;font-size:0.84rem;color:var(--error);}
+        .alert-ok{background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.3);border-radius:8px;padding:11px 14px;margin-bottom:14px;font-size:0.84rem;color:var(--success);}
+        .btn-primary{width:100%;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:13px;font-size:0.92rem;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:all 0.15s;margin-top:6px;}
+        .btn-primary:hover{background:var(--accent-2);box-shadow:0 4px 20px var(--accent-glow);}
+        .btn-primary:disabled{opacity:0.5;cursor:not-allowed;}
+        .form-footer{text-align:center;margin-top:18px;font-size:0.83rem;color:var(--text-3);}
+        .form-footer a{color:#60a5fa;text-decoration:none;font-weight:500;}
+        .form-footer a:hover{text-decoration:underline;}
+        .panel-footer{padding:18px 44px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+        .footer-badge{display:flex;align-items:center;gap:6px;font-size:0.72rem;color:var(--text-3);}
+        .footer-badge svg{color:var(--success);width:12px;height:12px;}
+        .info-panel{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+        .info-panel::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 60% 40%,rgba(37,99,235,0.18) 0%,transparent 60%),radial-gradient(ellipse 50% 50% at 20% 80%,rgba(96,165,250,0.1) 0%,transparent 55%);}
+        .info-panel::after{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px);background-size:48px 48px;}
+        .info-content{position:relative;z-index:1;padding:60px;max-width:580px;animation:fadeUp 0.5s 0.15s ease both;}
+        @keyframes fadeUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+        .info-eyebrow{display:inline-flex;align-items:center;gap:7px;background:rgba(37,99,235,0.15);border:1px solid rgba(37,99,235,0.3);border-radius:20px;padding:5px 14px;font-size:0.75rem;font-weight:600;color:#60a5fa;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:28px;}
+        .eyebrow-dot{width:6px;height:6px;border-radius:50%;background:#60a5fa;animation:pulse 2s infinite;}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+        .info-heading{font-size:2.8rem;font-weight:800;line-height:1.1;letter-spacing:-0.03em;margin-bottom:20px;}
+        .info-heading .blue{color:#60a5fa;}
+        .info-sub{font-size:1rem;color:var(--text-2);line-height:1.7;margin-bottom:40px;max-width:440px;}
+        .steps-list{display:flex;flex-direction:column;gap:18px;}
+        .step-item{display:flex;align-items:flex-start;gap:14px;}
+        .step-num{width:32px;height:32px;border-radius:50%;background:rgba(37,99,235,0.15);border:1px solid rgba(37,99,235,0.3);display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;color:#60a5fa;flex-shrink:0;}
+        .step-text strong{display:block;font-size:0.88rem;font-weight:600;color:var(--text-1);margin-bottom:3px;}
+        .step-text span{font-size:0.8rem;color:var(--text-2);}
+        .float-card{position:absolute;bottom:48px;right:48px;background:rgba(12,24,41,0.85);border:1px solid var(--border);border-radius:12px;padding:16px 20px;backdrop-filter:blur(20px);z-index:2;min-width:220px;}
+        .float-card-label{font-size:0.7rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;}
+        .float-card-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+        .float-card-row:last-child{margin-bottom:0;}
+        .fc-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+        .fc-text{font-size:0.8rem;color:var(--text-2);flex:1;}
+        .fc-badge{font-size:0.68rem;font-weight:600;padding:2px 7px;border-radius:4px;}
+        #studentFields{display:grid;}
+        @media(max-width:900px){body{grid-template-columns:1fr;}.info-panel{display:none;}.form-scroll{padding:28px 24px;}.panel-footer{padding:14px 24px;}}
     </style>
 </head>
 <body>
-<div class="register-wrapper">
-    <div class="logo-area">
-        <div class="logo-title">🎓 UniVerify</div>
-        <div class="logo-sub">Create your account</div>
-    </div>
-    <div class="card">
-        <div class="card-title">Create Account</div>
+<div class="form-panel">
+    <div class="form-scroll">
+        <div class="brand">
+            <div class="brand-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+            <span class="brand-name">UniVerify</span>
+        </div>
+        <div class="tab-bar">
+            <button class="tab-btn" onclick="window.location.href='/login'">Log In</button>
+            <button class="tab-btn active">Sign Up</button>
+        </div>
+        <div class="form-heading">Create your account</div>
+        <div class="form-subheading">Join the blockchain-secured document platform</div>
+        <div class="section-label">Select Role</div>
+        <div class="role-grid">
+            <div class="role-card active" id="role-student" onclick="selectRole('student',this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                <div class="role-name">Student</div><div class="role-desc">Document owner</div>
+            </div>
+            <div class="role-card" id="role-verifier" onclick="selectRole('verifier',this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <div class="role-name">Verifier</div><div class="role-desc">External party</div>
+            </div>
+            <div class="role-card" id="role-admin" onclick="selectRole('admin',this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <div class="role-name">Admin</div><div class="role-desc">Institution staff</div>
+            </div>
+        </div>
+        <input type="hidden" id="roleInput" value="student">
         <div id="alertBox"></div>
-
         <form id="registerForm">
-            <div class="mb-3">
-                <label class="form-label">Select Your Role</label>
-                <div class="role-selector">
-                    <div class="role-option selected" onclick="selectRole('student', this)">
-                        <span>🎓</span><p>Student</p>
-                    </div>
-                    <div class="role-option" onclick="selectRole('verifier', this)">
-                        <span>🔍</span><p>Verifier</p>
-                    </div>
-                    <div class="role-option" onclick="selectRole('admin', this)">
-                        <span>🔐</span><p>Admin</p>
-                    </div>
+            <div class="fields-row">
+                <div class="field">
+                    <label>Full Name</label>
+                    <input type="text" id="full_name" placeholder="Ali Hassan" required>
                 </div>
-                <input type="hidden" id="roleInput" value="student">
-            </div>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Full Name *</label>
-                    <input type="text" id="full_name" class="form-control" placeholder="Ali Hassan" required>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Email *</label>
-                    <input type="email" id="email" class="form-control" placeholder="ali@university.edu" required>
+                <div class="field">
+                    <label>Email address</label>
+                    <input type="email" id="email" placeholder="ali@university.edu" required>
                 </div>
             </div>
-
-            <div class="row" id="studentFields">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Registration Number</label>
-                    <input type="text" id="reg_number" class="form-control" placeholder="2021-CS-001">
+            <div class="fields-row" id="studentFields">
+                <div class="field">
+                    <label>Registration Number</label>
+                    <input type="text" id="reg_number" placeholder="2021-CS-001">
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Department</label>
-                    <select id="department" class="form-select">
-                        <option value="">Select...</option>
+                <div class="field">
+                    <label>Department</label>
+                    <select id="department">
+                        <option value="">Select department...</option>
                         <option>Computer Science</option>
                         <option>Software Engineering</option>
                         <option>Electrical Engineering</option>
@@ -90,52 +142,82 @@
                     </select>
                 </div>
             </div>
-
-            <div class="mb-3">
-                <label class="form-label">Password *</label>
-                <input type="password" id="password" class="form-control" placeholder="Min 6 characters" required>
+            <div class="field">
+                <label>Password</label>
+                <div class="pw-wrap">
+                    <input type="password" id="password" placeholder="Minimum 6 characters" required>
+                    <button type="button" class="pw-toggle" onclick="togglePw()">
+                        <svg id="eyeIco" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                </div>
             </div>
-
-            <button type="submit" class="btn-register">🚀 Create Account</button>
+            <button type="submit" class="btn-primary" id="regBtn">Create Account</button>
         </form>
-
-        <div class="login-link">Already have an account? <a href="/login">Sign in</a></div>
+        <div class="form-footer">Already have an account? <a href="/login">Sign in</a></div>
+    </div>
+    <div class="panel-footer">
+        <div class="footer-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>TLS 1.3 Encrypted</div>
+        <div class="footer-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>SHA-256 Blockchain</div>
+        <div class="footer-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>X.509 Certificates</div>
     </div>
 </div>
-
+<div class="info-panel">
+    <div class="info-content">
+        <div class="info-eyebrow"><div class="eyebrow-dot"></div>Get Started Today</div>
+        <h1 class="info-heading">Secure your<br>documents with<br><span class="blue">blockchain</span></h1>
+        <p class="info-sub">Create your account and start signing, verifying, and protecting institutional documents with cryptographic authentication.</p>
+        <div class="steps-list">
+            <div class="step-item">
+                <div class="step-num">1</div>
+                <div class="step-text"><strong>Create your account</strong><span>Choose your role and register with your institutional email address</span></div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">2</div>
+                <div class="step-text"><strong>Upload and sign documents</strong><span>Your X.509 certificate authenticates every signature cryptographically</span></div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">3</div>
+                <div class="step-text"><strong>Blockchain-recorded forever</strong><span>Every signature is permanently recorded with tamper-evident hash chaining</span></div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">4</div>
+                <div class="step-text"><strong>Verify from anywhere</strong><span>Any party can verify document authenticity — no account required</span></div>
+            </div>
+        </div>
+    </div>
+    <div class="float-card">
+        <div class="float-card-label">System Status</div>
+        <div class="float-card-row"><div class="fc-dot" style="background:#22c55e;box-shadow:0 0 6px #22c55e;"></div><div class="fc-text">Chain Integrity</div><div class="fc-badge" style="background:rgba(34,197,94,0.12);color:#22c55e;">VALID</div></div>
+        <div class="float-card-row"><div class="fc-dot" style="background:#60a5fa;"></div><div class="fc-text">Encryption</div><div class="fc-badge" style="background:rgba(96,165,250,0.12);color:#60a5fa;">TLS 1.3</div></div>
+        <div class="float-card-row"><div class="fc-dot" style="background:#a78bfa;"></div><div class="fc-text">Certificates</div><div class="fc-badge" style="background:rgba(167,139,250,0.12);color:#a78bfa;">ACTIVE</div></div>
+    </div>
+</div>
 <script>
-let selectedRole = 'student';
-
-function selectRole(role, el) {
-    selectedRole = role;
-    document.getElementById('roleInput').value = role;
-    document.querySelectorAll('.role-option').forEach(o => o.classList.remove('selected'));
-    el.classList.add('selected');
-    document.getElementById('studentFields').style.display = role === 'student' ? 'flex' : 'none';
-}
-
-document.getElementById('registerForm').addEventListener('submit', async (e) => {
+let selectedRole='student';
+function selectRole(role,el){selectedRole=role;document.getElementById('roleInput').value=role;document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('active'));el.classList.add('active');document.getElementById('studentFields').style.display=role==='student'?'grid':'none';}
+function togglePw(){const p=document.getElementById('password');const isText=p.type==='text';p.type=isText?'password':'text';document.getElementById('eyeIco').innerHTML=isText?'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>':'<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';}
+document.getElementById('registerForm').addEventListener('submit',async(e)=>{
     e.preventDefault();
-    const formData = new FormData();
-    formData.append('full_name', document.getElementById('full_name').value);
-    formData.append('email', document.getElementById('email').value);
-    formData.append('password', document.getElementById('password').value);
-    formData.append('role', selectedRole);
-    formData.append('reg_number', document.getElementById('reg_number').value);
-    formData.append('department', document.getElementById('department').value);
-
-    try {
-        const res = await fetch('/register', { method: 'POST', body: formData });
-        const data = await res.json();
-        if (data.success) {
-            document.getElementById('alertBox').innerHTML = '<div class="alert-success">✅ Account created! Redirecting...</div>';
-            setTimeout(() => window.location.href = '/login', 1500);
-        } else {
-            document.getElementById('alertBox').innerHTML = `<div class="alert-error">⚠️ ${data.error}</div>`;
+    const btn=document.getElementById('regBtn');
+    btn.textContent='Creating account...';btn.disabled=true;
+    const fd=new FormData();
+    fd.append('full_name',document.getElementById('full_name').value);
+    fd.append('email',document.getElementById('email').value);
+    fd.append('password',document.getElementById('password').value);
+    fd.append('role',selectedRole);
+    fd.append('reg_number',document.getElementById('reg_number').value);
+    fd.append('department',document.getElementById('department').value);
+    try{
+        const res=await fetch('/register',{method:'POST',body:fd});
+        const data=await res.json();
+        if(data.success){
+            document.getElementById('alertBox').innerHTML='<div class="alert-ok">Account created successfully. Redirecting to login...</div>';
+            setTimeout(()=>window.location.href='/login',1500);
+        }else{
+            document.getElementById('alertBox').innerHTML=`<div class="alert-err">${data.error||'Registration failed.'}</div>`;
+            btn.textContent='Create Account';btn.disabled=false;
         }
-    } catch(e) {
-        window.location.href = '/register';
-    }
+    }catch(e){window.location.href='/register';}
 });
 </script>
 </body>

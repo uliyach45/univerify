@@ -4,176 +4,337 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UniVerify — Student Portal</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        body { background: #0a0a0a; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; }
-        .navbar { background: #0d0d0d !important; border-bottom: 1px solid #1a1a1a; }
-        .navbar-brand { color: #00ff41 !important; font-weight: 800; font-size: 1.2rem; }
-        .nav-link { color: #666 !important; font-size: 0.88rem; }
-        .nav-link:hover { color: #00ff41 !important; }
-        .welcome-banner { background: linear-gradient(135deg, #0d1a0d, #0a0a0a); border: 1px solid #1a3a1a; border-radius: 16px; padding: 28px 32px; margin-bottom: 28px; }
-        .welcome-name { color: #00ff41; font-size: 1.6rem; font-weight: 700; }
-        .welcome-sub { color: #555; font-size: 0.9rem; margin-top: 4px; }
-        .info-pill { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 20px; padding: 6px 16px; font-size: 0.8rem; color: #888; display: inline-block; margin-right: 8px; margin-top: 12px; }
-        .info-pill span { color: #00bcd4; }
-        .doc-card { background: #111; border: 1px solid #1a1a1a; border-radius: 12px; padding: 20px; margin-bottom: 16px; transition: all 0.2s; position: relative; overflow: hidden; }
-        .doc-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #00ff41; }
-        .doc-card.revoked::before { background: #ff4444; }
-        .doc-card:hover { border-color: #2a2a2a; transform: translateY(-2px); }
-        .doc-name { color: #e0e0e0; font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
-        .doc-meta { color: #555; font-size: 0.8rem; }
-        .doc-type-badge { background: #1a1a0d; color: #ffa500; border: 1px solid #3a3a0d; border-radius: 6px; padding: 3px 10px; font-size: 0.75rem; display: inline-block; }
-        .doc-status-active { background: #0d1f0d; color: #00ff41; border: 1px solid #1a3a1a; border-radius: 6px; padding: 3px 10px; font-size: 0.75rem; display: inline-block; }
-        .doc-status-revoked { background: #1f0d0d; color: #ff4444; border: 1px solid #3a1a1a; border-radius: 6px; padding: 3px 10px; font-size: 0.75rem; display: inline-block; }
-        .hash-text { font-family: monospace; font-size: 0.75rem; color: #00ff41; word-break: break-all; }
-        .btn-view-qr { background: transparent; border: 1px solid #333; color: #888; border-radius: 6px; padding: 5px 12px; font-size: 0.78rem; cursor: pointer; transition: all 0.2s; }
-        .btn-view-qr:hover { border-color: #00ff41; color: #00ff41; }
-        .btn-share { background: transparent; border: 1px solid #333; color: #888; border-radius: 6px; padding: 5px 12px; font-size: 0.78rem; cursor: pointer; transition: all 0.2s; }
-        .btn-share:hover { border-color: #00bcd4; color: #00bcd4; }
-        .empty-state { text-align: center; padding: 60px 20px; }
-        .empty-icon { font-size: 4rem; margin-bottom: 16px; }
-        .empty-title { color: #555; font-size: 1.1rem; margin-bottom: 8px; }
-        .empty-sub { color: #333; font-size: 0.85rem; }
-        .qr-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; }
+        :root {
+            --bg:       #060e1c;
+            --bg-card:  #0c1829;
+            --bg-input: #0a1520;
+            --sidebar:  #091423;
+            --border:   rgba(255,255,255,0.07);
+            --border2:  rgba(255,255,255,0.12);
+            --accent:   #2563eb;
+            --text-1:   #f1f5f9;
+            --text-2:   #94a3b8;
+            --text-3:   #475569;
+            --success:  #22c55e;
+            --warn:     #f59e0b;
+            --error:    #ef4444;
+            --cyan:     #06b6d4;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text-1); min-height: 100vh; }
+
+        /* NAV */
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(9,20,35,0.97); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 32px; height: 60px;
+        }
+        .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .nav-logo { width: 28px; height: 28px; background: var(--accent); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+        .nav-logo svg { width: 15px; height: 15px; color: #fff; }
+        .nav-name { font-size: 1rem; font-weight: 700; color: var(--text-1); }
+        .nav-right { display: flex; align-items: center; gap: 16px; }
+        .nav-link { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 7px; font-size: 0.82rem; font-weight: 500; color: var(--text-2); text-decoration: none; transition: all 0.15s; }
+        .nav-link svg { width: 13px; height: 13px; }
+        .nav-link:hover { color: var(--text-1); background: rgba(255,255,255,0.05); }
+        .nav-sep { color: var(--border2); }
+        .nav-user { font-size: 0.82rem; color: var(--text-2); }
+        .btn-logout { background: transparent; border: 1px solid var(--border); color: var(--text-2); border-radius: 7px; padding: 6px 14px; font-size: 0.8rem; font-family: 'Inter', sans-serif; cursor: pointer; text-decoration: none; transition: all 0.15s; }
+        .btn-logout:hover { border-color: var(--error); color: var(--error); }
+
+        /* MAIN */
+        .main { max-width: 1200px; margin: 0 auto; padding: 28px 28px 60px; }
+
+        /* WELCOME BANNER */
+        .welcome-banner {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px; padding: 28px 32px; margin-bottom: 24px;
+            position: relative; overflow: hidden;
+        }
+        .welcome-banner::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, var(--accent), #60a5fa);
+        }
+        .welcome-top { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+        .welcome-name { font-size: 1.4rem; font-weight: 700; color: var(--text-1); letter-spacing: -0.02em; margin-bottom: 4px; }
+        .welcome-sub { font-size: 0.85rem; color: var(--text-3); }
+        .info-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+        .info-pill { background: var(--bg-input); border: 1px solid var(--border); border-radius: 20px; padding: 5px 14px; font-size: 0.75rem; color: var(--text-3); display: flex; align-items: center; gap: 5px; }
+        .info-pill span { color: #60a5fa; font-weight: 500; }
+
+        /* STATS */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; }
+        .stat-num { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 4px; }
+        .stat-lbl { font-size: 0.72rem; color: var(--text-3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+        .n-blue   { color: #60a5fa; }
+        .n-cyan   { color: var(--cyan); }
+        .n-red    { color: var(--error); }
+        .n-purple { color: #a78bfa; }
+
+        /* LAYOUT */
+        .layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+
+        /* SECTION TITLE */
+        .section-title { font-size: 0.875rem; font-weight: 600; color: var(--text-1); margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
+        .section-title svg { width: 15px; height: 15px; color: var(--text-3); }
+
+        /* DOC CARDS */
+        .doc-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 20px; margin-bottom: 12px;
+            position: relative; overflow: hidden; transition: border-color 0.2s, transform 0.15s;
+        }
+        .doc-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); border-radius: 3px 0 0 3px; }
+        .doc-card.revoked::before { background: var(--error); }
+        .doc-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+        .doc-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; }
+        .doc-name { font-size: 0.95rem; font-weight: 600; color: var(--text-1); margin-bottom: 5px; }
+        .doc-meta { font-size: 0.75rem; color: var(--text-3); margin-bottom: 10px; }
+        .badges { display: flex; gap: 6px; flex-wrap: wrap; }
+        .badge { display: inline-block; font-size: 0.68rem; font-weight: 600; padding: 3px 9px; border-radius: 5px; }
+        .badge-type    { background: rgba(245,158,11,0.1); color: var(--warn); border: 1px solid rgba(245,158,11,0.2); }
+        .badge-active  { background: rgba(37,99,235,0.1);  color: #60a5fa; border: 1px solid rgba(37,99,235,0.25); }
+        .badge-revoked { background: rgba(239,68,68,0.1);  color: var(--error); border: 1px solid rgba(239,68,68,0.25); }
+        .doc-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .btn-sm { background: transparent; border: 1px solid var(--border); color: var(--text-2); border-radius: 6px; padding: 5px 12px; font-size: 0.75rem; font-family: 'Inter', sans-serif; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all 0.15s; }
+        .btn-sm svg { width: 12px; height: 12px; }
+        .btn-sm:hover { border-color: var(--border2); color: var(--text-1); }
+        .btn-sm.blue:hover { border-color: #60a5fa; color: #60a5fa; }
+        .doc-hashes { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 5px; }
+        .hash-row { display: flex; align-items: flex-start; gap: 8px; }
+        .hash-lbl { font-size: 0.68rem; color: var(--text-3); min-width: 80px; padding-top: 1px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+        .hash-val { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #60a5fa; word-break: break-all; }
+        .hash-val.warn { color: var(--warn); }
+
+        /* EMPTY STATE */
+        .empty-state { text-align: center; padding: 56px 20px; }
+        .empty-icon { width: 56px; height: 56px; border-radius: 14px; background: var(--bg-input); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; }
+        .empty-icon svg { width: 24px; height: 24px; color: var(--text-3); }
+        .empty-title { font-size: 1rem; font-weight: 600; color: var(--text-2); margin-bottom: 6px; }
+        .empty-sub { font-size: 0.82rem; color: var(--text-3); }
+
+        /* SIDEBAR */
+        .sidebar-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 16px; }
+        .sidebar-head { padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 0.82rem; font-weight: 600; color: var(--text-1); display: flex; align-items: center; gap: 7px; }
+        .sidebar-head svg { width: 14px; height: 14px; color: var(--text-3); }
+        .sidebar-body { padding: 18px; }
+
+        /* QUICK VERIFY */
+        .field input[type="file"] { width: 100%; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; color: var(--text-2); padding: 9px 12px; font-size: 0.8rem; font-family: 'Inter', sans-serif; outline: none; margin-bottom: 12px; cursor: pointer; }
+        .field input[type="file"]::file-selector-button { background: var(--accent); color: #fff; border: none; border-radius: 5px; padding: 4px 10px; font-size: 0.75rem; font-family: 'Inter', sans-serif; cursor: pointer; margin-right: 8px; }
+        .btn-primary { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 11px; font-size: 0.85rem; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; justify-content: center; gap: 7px; }
+        .btn-primary svg { width: 14px; height: 14px; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .result-auth { background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.25); border-radius: 8px; padding: 14px; margin-top: 12px; }
+        .result-fail { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); border-radius: 8px; padding: 14px; margin-top: 12px; }
+        .result-title { font-size: 0.82rem; font-weight: 700; margin-bottom: 5px; }
+
+        /* HOW TO SHARE */
+        .step-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+        .step-item:last-child { margin-bottom: 0; }
+        .step-num { width: 20px; height: 20px; border-radius: 50%; background: rgba(37,99,235,0.15); border: 1px solid rgba(37,99,235,0.3); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; color: #60a5fa; flex-shrink: 0; margin-top: 1px; }
+        .step-text { font-size: 0.78rem; color: var(--text-3); line-height: 1.5; }
+        .step-text strong { color: var(--text-2); }
+
+        /* QR MODAL */
+        .qr-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
         .qr-modal.show { display: flex; }
-        .qr-box { background: #111; border: 1px solid #333; border-radius: 16px; padding: 32px; text-align: center; max-width: 320px; }
-        .qr-box img { width: 200px; height: 200px; border: 3px solid #00ff41; border-radius: 8px; }
-        .btn-close-modal { background: #333; border: none; color: #e0e0e0; border-radius: 8px; padding: 8px 20px; margin-top: 16px; cursor: pointer; }
-        .stats-row { display: flex; gap: 16px; margin-bottom: 28px; }
-        .mini-stat { background: #111; border: 1px solid #1a1a1a; border-radius: 10px; padding: 16px 20px; flex: 1; text-align: center; }
-        .mini-num { font-size: 1.6rem; font-weight: 700; }
-        .mini-label { color: #555; font-size: 0.78rem; margin-top: 2px; }
-        .verify-section { background: #111; border: 1px solid #1a1a1a; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
-        .form-control { background: #1a1a1a; border: 1px solid #333; color: #e0e0e0; border-radius: 8px; padding: 10px 14px; }
-        .form-control:focus { background: #1a1a1a; border-color: #00ff41; color: #e0e0e0; box-shadow: none; }
-        .btn-verify { background: #00bcd4; color: #000; font-weight: 700; border: none; border-radius: 8px; padding: 10px 20px; cursor: pointer; }
-        .result-auth { background: #0d1f0d; border: 1px solid #00ff41; border-radius: 8px; padding: 16px; margin-top: 12px; }
-        .result-fail { background: #1f0d0d; border: 1px solid #ff4444; border-radius: 8px; padding: 16px; margin-top: 12px; }
+        .qr-box { background: var(--bg-card); border: 1px solid var(--border2); border-radius: 16px; padding: 32px; text-align: center; max-width: 300px; }
+        .qr-title { font-size: 0.9rem; font-weight: 600; color: var(--text-1); margin-bottom: 18px; }
+        .qr-box img { width: 180px; height: 180px; border: 2px solid var(--accent); border-radius: 10px; }
+        .qr-doc-name { font-size: 0.75rem; color: var(--text-3); margin-top: 12px; }
+        .btn-close-modal { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-2); border-radius: 8px; padding: 8px 20px; margin-top: 16px; cursor: pointer; font-size: 0.82rem; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+        .btn-close-modal:hover { border-color: var(--border2); color: var(--text-1); }
+
+        @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .stats-grid { grid-template-columns: repeat(2,1fr); } }
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg">
-    <div class="container-fluid px-4">
-        <span class="navbar-brand">🎓 UniVerify</span>
-        <div class="navbar-nav ms-auto d-flex flex-row gap-3 align-items-center">
-            <a class="nav-link" href="/verify">🔍 Verify Document</a>
-            <span style="color:#333;">|</span>
-            <span style="color:#888; font-size:0.85rem;">{{ current_user.full_name }}</span>
-            <a href="/logout" style="background:transparent; border:1px solid #333; color:#666; border-radius:8px; padding:6px 14px; font-size:0.82rem; text-decoration:none;">Logout</a>
-        </div>
+
+<!-- NAV -->
+<nav>
+    <a href="/" class="nav-brand">
+        <div class="nav-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+        <span class="nav-name">UniVerify</span>
+    </a>
+    <div class="nav-right">
+        <a href="/verify" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            Verify Document
+        </a>
+        <span class="nav-sep">|</span>
+        <span class="nav-user">{{ current_user.full_name }}</span>
+        <a href="/logout" class="btn-logout">Logout</a>
     </div>
 </nav>
 
-<div class="container-fluid px-4 py-4">
+<div class="main">
+
+    <!-- WELCOME BANNER -->
     <div class="welcome-banner">
-        <div class="welcome-name">👋 Welcome, {{ current_user.full_name }}!</div>
-        <div class="welcome-sub">Your documents are secured on the blockchain</div>
-        <div>
+        <div class="welcome-top">
+            <div>
+                <div class="welcome-name">Welcome, {{ current_user.full_name }}</div>
+                <div class="welcome-sub">Your documents are secured on the blockchain</div>
+            </div>
+        </div>
+        <div class="info-pills">
             {% if current_user.reg_number %}
-            <span class="info-pill">Reg# <span>{{ current_user.reg_number }}</span></span>
+            <div class="info-pill">Reg# <span>{{ current_user.reg_number }}</span></div>
             {% endif %}
             {% if current_user.department %}
-            <span class="info-pill">Dept <span>{{ current_user.department }}</span></span>
+            <div class="info-pill">Department <span>{{ current_user.department }}</span></div>
             {% endif %}
-            <span class="info-pill">Role <span>{{ current_user.role }}</span></span>
-            <span class="info-pill">Email <span>{{ current_user.email }}</span></span>
+            <div class="info-pill">Role <span>{{ current_user.role }}</span></div>
+            <div class="info-pill">Email <span>{{ current_user.email }}</span></div>
         </div>
     </div>
 
-    <div class="stats-row">
-        <div class="mini-stat">
-            <div class="mini-num" style="color:#00ff41;">{{ documents|length }}</div>
-            <div class="mini-label">Total Documents</div>
+    <!-- STATS -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-num n-blue">{{ documents|length }}</div>
+            <div class="stat-lbl">Total Documents</div>
         </div>
-        <div class="mini-stat">
-            <div class="mini-num" style="color:#00bcd4;">{{ documents|selectattr('status','equalto','active')|list|length }}</div>
-            <div class="mini-label">Active</div>
+        <div class="stat-card">
+            <div class="stat-num n-cyan">{{ documents|selectattr('status','equalto','active')|list|length }}</div>
+            <div class="stat-lbl">Active</div>
         </div>
-        <div class="mini-stat">
-            <div class="mini-num" style="color:#ff4444;">{{ documents|selectattr('status','equalto','revoked')|list|length }}</div>
-            <div class="mini-label">Revoked</div>
+        <div class="stat-card">
+            <div class="stat-num n-red">{{ documents|selectattr('status','equalto','revoked')|list|length }}</div>
+            <div class="stat-lbl">Revoked</div>
         </div>
-        <div class="mini-stat">
-            <div class="mini-num" style="color:#ffa500;">⛓️</div>
-            <div class="mini-label">Blockchain Secured</div>
+        <div class="stat-card">
+            <div class="stat-num n-purple">SHA-256</div>
+            <div class="stat-lbl">Blockchain Secured</div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-lg-8">
-            <h5 style="color:#e0e0e0; margin-bottom:16px; font-size:1rem;">📄 My Documents</h5>
+    <!-- LAYOUT -->
+    <div class="layout">
+
+        <!-- DOCUMENTS -->
+        <div>
+            <div class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                My Documents
+            </div>
 
             {% if documents %}
                 {% for doc in documents %}
                 <div class="doc-card {{ 'revoked' if doc.status == 'revoked' else '' }}">
-                    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
+                    <div class="doc-top">
                         <div style="flex:1;">
                             <div class="doc-name">{{ doc.original_name }}</div>
-                            <div class="doc-meta" style="margin-bottom:8px;">
-                                Signed: {{ doc.signed_at.strftime('%B %d, %Y at %H:%M') }}
-                                {% if doc.expires_at %}
-                                · Expires: {{ doc.expires_at.strftime('%B %d, %Y') }}
-                                {% endif %}
+                            <div class="doc-meta">
+                                Signed {{ doc.signed_at.strftime('%B %d, %Y at %H:%M') }}
+                                {% if doc.expires_at %} &nbsp;·&nbsp; Expires {{ doc.expires_at.strftime('%B %d, %Y') }}{% endif %}
                             </div>
-                            <span class="doc-type-badge">{{ doc.doc_type }}</span>
-                            <span class="doc-status-{{ doc.status }}" style="margin-left:6px;">{{ doc.status }}</span>
+                            <div class="badges">
+                                <span class="badge badge-type">{{ doc.doc_type }}</span>
+                                <span class="badge badge-{{ doc.status }}">{{ doc.status }}</span>
+                            </div>
                         </div>
-                        <div style="display:flex; gap:8px; flex-shrink:0;">
+                        <div class="doc-actions">
                             {% if doc.qr_code_path %}
-                            <button class="btn-view-qr" onclick="showQR('{{ doc.qr_code_path }}', '{{ doc.original_name }}')">📱 QR Code</button>
+                            <button class="btn-sm" onclick="showQR('{{ doc.qr_code_path }}', '{{ doc.original_name }}')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                                QR Code
+                            </button>
                             {% endif %}
-                            <button class="btn-share" onclick="shareDoc('{{ doc.file_hash }}')">🔗 Share</button>
+                            <button class="btn-sm blue" onclick="shareDoc('{{ doc.file_hash }}')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                                Share
+                            </button>
                         </div>
                     </div>
-                    <div style="margin-top:12px; padding-top:12px; border-top:1px solid #1a1a1a;">
-                        <div style="color:#555; font-size:0.75rem; margin-bottom:3px;">SHA-256 File Hash:</div>
-                        <div class="hash-text">{{ doc.file_hash }}</div>
-                    </div>
-                    <div style="margin-top:8px;">
-                        <div style="color:#555; font-size:0.75rem; margin-bottom:3px;">Block Hash:</div>
-                        <div class="hash-text" style="color:#ffa500;">{{ doc.block_hash }}</div>
+                    <div class="doc-hashes">
+                        <div class="hash-row">
+                            <span class="hash-lbl">File Hash</span>
+                            <span class="hash-val">{{ doc.file_hash }}</span>
+                        </div>
+                        <div class="hash-row">
+                            <span class="hash-lbl">Block Hash</span>
+                            <span class="hash-val warn">{{ doc.block_hash }}</span>
+                        </div>
                     </div>
                 </div>
                 {% endfor %}
             {% else %}
                 <div class="empty-state">
-                    <div class="empty-icon">📭</div>
+                    <div class="empty-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    </div>
                     <div class="empty-title">No documents yet</div>
                     <div class="empty-sub">Your signed documents will appear here once an admin issues them</div>
                 </div>
             {% endif %}
         </div>
 
-        <div class="col-lg-4">
-            <div class="verify-section">
-                <h6 style="color:#e0e0e0; margin-bottom:16px;">🔍 Quick Verify</h6>
-                <p style="color:#555; font-size:0.83rem; margin-bottom:16px;">Upload any document to check if it's authentic</p>
-                <input type="file" id="vFile" class="form-control mb-3" accept=".pdf,.docx,.xlsx,.txt">
-                <button class="btn-verify w-100" onclick="quickVerify()">🔍 Check Authenticity</button>
-                <div id="vResult"></div>
+        <!-- SIDEBAR -->
+        <div>
+            <!-- Quick Verify -->
+            <div class="sidebar-card">
+                <div class="sidebar-head">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    Quick Verify
+                </div>
+                <div class="sidebar-body">
+                    <p style="font-size:0.78rem;color:var(--text-3);margin-bottom:14px;">Upload any document to check if it's authentic on the blockchain.</p>
+                    <div class="field">
+                        <input type="file" id="vFile" accept=".pdf,.docx,.xlsx,.txt">
+                    </div>
+                    <button class="btn-primary" onclick="quickVerify()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                        Check Authenticity
+                    </button>
+                    <div id="vResult"></div>
+                </div>
             </div>
 
-            <div style="background:#111; border:1px solid #1a1a1a; border-radius:12px; padding:20px;">
-                <h6 style="color:#e0e0e0; margin-bottom:16px;">ℹ️ How to share your document</h6>
-                <div style="color:#555; font-size:0.82rem; line-height:1.8;">
-                    <div>1️⃣ Click <span style="color:#00bcd4;">🔗 Share</span> on any document</div>
-                    <div>2️⃣ Copy the verification link</div>
-                    <div>3️⃣ Anyone can verify without login</div>
-                    <div>4️⃣ Or use <span style="color:#00ff41;">📱 QR Code</span> for instant scan</div>
+            <!-- How to Share -->
+            <div class="sidebar-card">
+                <div class="sidebar-head">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    How to share your document
+                </div>
+                <div class="sidebar-body">
+                    <div class="step-item">
+                        <div class="step-num">1</div>
+                        <div class="step-text">Click <strong>Share</strong> on any document</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">2</div>
+                        <div class="step-text">Copy the verification link</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">3</div>
+                        <div class="step-text">Anyone can verify without logging in</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-num">4</div>
+                        <div class="step-text">Or use <strong>QR Code</strong> for instant scanning</div>
+                    </div>
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 
-<!-- QR Modal -->
+<!-- QR MODAL -->
 <div class="qr-modal" id="qrModal" onclick="closeQR()">
     <div class="qr-box" onclick="event.stopPropagation()">
-        <div style="color:#00ff41; font-weight:bold; margin-bottom:12px;">📱 Scan to Verify</div>
+        <div class="qr-title">Scan to Verify</div>
         <img id="qrImg" src="" alt="QR Code">
-        <div id="qrDocName" style="color:#888; font-size:0.82rem; margin-top:10px;"></div>
-        <div style="color:#555; font-size:0.75rem; margin-top:6px;">Scan with any phone camera</div>
+        <div id="qrDocName" class="qr-doc-name"></div>
+        <div style="font-size:0.72rem;color:var(--text-3);margin-top:4px;">Scan with any phone camera</div>
         <button class="btn-close-modal" onclick="closeQR()">Close</button>
     </div>
 </div>
@@ -189,7 +350,7 @@ function closeQR() { document.getElementById('qrModal').classList.remove('show')
 function shareDoc(hash) {
     const url = `https://localhost:5000/public/verify/${hash}`;
     navigator.clipboard.writeText(url).then(() => {
-        alert('✅ Verification link copied!\n\n' + url + '\n\nAnyone can use this link to verify your document.');
+        alert('Verification link copied!\n\n' + url);
     }).catch(() => {
         prompt('Copy this verification link:', url);
     });
@@ -197,27 +358,29 @@ function shareDoc(hash) {
 
 async function quickVerify() {
     const fi = document.getElementById('vFile');
-    if (!fi.files[0]) { alert('Select a file!'); return; }
+    if (!fi.files[0]) { alert('Please select a file first.'); return; }
     const fd = new FormData();
     fd.append('file', fi.files[0]);
     const box = document.getElementById('vResult');
-    box.innerHTML = '<div style="color:#555; margin-top:12px; font-size:0.85rem;">⏳ Checking...</div>';
+    box.innerHTML = '<div style="color:var(--text-3);margin-top:12px;font-size:0.82rem;">Checking...</div>';
     try {
         const res = await fetch('/api/verify', { method: 'POST', body: fd });
         const d = await res.json();
         if (d.status === 'authentic') {
             box.innerHTML = `<div class="result-auth">
-                <div style="color:#00ff41; font-weight:bold;">✅ AUTHENTIC</div>
-                <div style="color:#aaa; font-size:0.8rem; margin-top:6px;">Signed by: ${d.signer_email}</div>
-                <div style="color:#555; font-size:0.78rem;">${d.timestamp}</div>
+                <div class="result-title" style="color:#60a5fa;">Document Authentic</div>
+                <div style="font-size:0.75rem;color:var(--text-3);margin-top:4px;">Signed by: ${d.signer_email}</div>
+                <div style="font-size:0.72rem;color:var(--text-3);">${d.timestamp}</div>
             </div>`;
         } else {
             box.innerHTML = `<div class="result-fail">
-                <div style="color:#ff4444; font-weight:bold;">🚨 NOT VERIFIED</div>
-                <div style="color:#aaa; font-size:0.8rem; margin-top:6px;">Document not found on blockchain</div>
+                <div class="result-title" style="color:var(--error);">Not Verified</div>
+                <div style="font-size:0.75rem;color:var(--text-3);margin-top:4px;">Document not found on blockchain</div>
             </div>`;
         }
-    } catch(e) { box.innerHTML = '<div style="color:#ff4444; margin-top:8px;">Error checking document</div>'; }
+    } catch(e) {
+        box.innerHTML = '<div style="color:var(--error);margin-top:8px;font-size:0.82rem;">Error checking document</div>';
+    }
 }
 </script>
 </body>

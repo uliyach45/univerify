@@ -54,13 +54,43 @@ def generate_qr(doc_id, file_hash):
 # PAGE ROUTES
 # ─────────────────────────────────────────────
 
+
+@app.route('/login-qr')
+def login_qr():
+    import qrcode, io
+    from flask import send_file
+    login_url = "https://driver-numeral-sandworm.ngrok-free.dev/login"
+    qr = qrcode.QRCode(version=1, box_size=8, border=4)
+    qr.add_data(login_url)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    buf = io.BytesIO()
+    img.save(buf, format='PNG')
+    buf.seek(0)
+    return send_file(buf, mimetype='image/png')
+
+
+@app.route('/verify-qr')
+def verify_qr():
+    import qrcode, io
+    from flask import send_file
+    url = "https://driver-numeral-sandworm.ngrok-free.dev/verify_public"
+    qr = qrcode.QRCode(version=1, box_size=8, border=4)
+    qr.add_data(url)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    buf = io.BytesIO()
+    img.save(buf, format='PNG')
+    buf.seek(0)
+    return send_file(buf, mimetype='image/png')
+
 @app.route('/')
 def index():
     if current_user.is_authenticated:
         if current_user.role == 'admin':
             return redirect(url_for('dashboard'))
         return redirect(url_for('student_portal'))
-    return redirect(url_for('auth.login'))
+    return render_template('index.html')
 
 @app.route('/dashboard')
 @login_required
@@ -86,6 +116,10 @@ def student_portal():
     my_docs = Document.query.filter_by(user_id=current_user.id).order_by(Document.signed_at.desc()).all()
     return render_template('student_portal.html', documents=my_docs)
 
+@app.route("/security")
+def security_page():
+    return render_template("security.html")
+
 @app.route('/explorer')
 @login_required
 def explorer_page():
@@ -96,6 +130,29 @@ def explorer_page():
 def verify_page():
     return render_template('verify.html')
 
+@app.route('/verify_public', methods=['GET','POST'])
+def verify_public_page():
+    import hashlib
+    from flask import session, request as freq
+    if not current_user.is_authenticated:
+        session['verify_count'] = session.get('verify_count', 0)
+        if freq.method == 'POST':
+            if session['verify_count'] >= 2:
+                return render_template('verify_public.html', block=None, doc=None, file_hash=None, limit_reached=True)
+            session['verify_count'] += 1
+    if request.method == 'POST':
+        f = request.files.get('file')
+        if f:
+            file_hash = hashlib.sha256(f.read()).hexdigest()
+            block = blockchain.query_by_hash(file_hash)
+            doc = Document.query.filter_by(file_hash=file_hash).first()
+            return render_template('verify_public.html', block=block, doc=doc, file_hash=file_hash)
+    file_hash = request.args.get('hash')
+    if file_hash:
+        block = blockchain.query_by_hash(file_hash)
+        doc = Document.query.filter_by(file_hash=file_hash).first()
+        return render_template('verify_public.html', block=block, doc=doc, file_hash=file_hash)
+    return render_template('verify_public.html', block=None, doc=None, file_hash=None)
 @app.route('/public/verify/<file_hash>')
 def public_verify(file_hash):
     block = blockchain.query_by_hash(file_hash)

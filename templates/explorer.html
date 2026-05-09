@@ -3,149 +3,367 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blockchain Explorer</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css">
+    <title>UniVerify — Blockchain Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        body { background: #0a0a0a; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; }
-        .navbar { background: #111 !important; border-bottom: 1px solid #ffa500; }
-        .navbar-brand { color: #ffa500 !important; font-weight: bold; font-size: 1.3rem; }
-        .nav-link { color: #aaa !important; }
-        .nav-link:hover { color: #ffa500 !important; }
-        .hero { background: linear-gradient(135deg, #0a0a0a 0%, #1f1a0d 100%); padding: 60px 0 40px; }
-        .hero h1 { color: #ffa500; font-size: 2.2rem; font-weight: bold; }
-        .block-card { background: #111; border: 1px solid #333; border-radius: 12px; margin-bottom: 20px; transition: all 0.3s; }
-        .block-card:hover { border-color: #ffa500; transform: translateY(-2px); }
-        .block-card.genesis { border-color: #555; opacity: 0.7; }
-        .block-header { background: #1a1a1a; border-bottom: 1px solid #333; padding: 15px 20px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center; }
-        .block-index { color: #ffa500; font-weight: bold; font-size: 1.1rem; }
-        .block-time { color: #888; font-size: 0.8rem; }
-        .block-body { padding: 20px; }
-        .field-row { display: flex; margin-bottom: 10px; gap: 10px; }
-        .field-label { color: #888; font-size: 0.8rem; min-width: 130px; padding-top: 2px; }
-        .field-value { color: #e0e0e0; font-size: 0.8rem; word-break: break-all; flex: 1; }
-        .hash-val { font-family: monospace; color: #00ff41; }
-        .hash-prev { font-family: monospace; color: #ffa500; }
-        .hash-parent { font-family: monospace; color: #00bcd4; }
-        .email-val { color: #00bcd4; }
-        .filename-val { color: #fff; font-weight: bold; }
-        .stats-card { background: #111; border: 1px solid #333; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-        .stat-item { text-align: center; }
-        .stat-number { font-size: 2rem; font-weight: bold; color: #ffa500; }
-        .stat-label { color: #888; font-size: 0.85rem; }
-        .valid-badge { background: #00ff41; color: #000; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
-        .invalid-badge { background: #ff4444; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
-        .footer { background: #111; border-top: 1px solid #333; padding: 20px 0; text-align: center; color: #555; margin-top: 60px; }
-        .chain-line { text-align: center; color: #ffa500; font-size: 1.5rem; margin: -10px 0; }
+        :root {
+            --bg:       #060e1c;
+            --bg-card:  #0c1829;
+            --bg-input: #0a1520;
+            --sidebar:  #091423;
+            --border:   rgba(255,255,255,0.07);
+            --border2:  rgba(255,255,255,0.12);
+            --accent:   #2563eb;
+            --text-1:   #f1f5f9;
+            --text-2:   #94a3b8;
+            --text-3:   #475569;
+            --success:  #22c55e;
+            --warn:     #f59e0b;
+            --error:    #ef4444;
+            --cyan:     #06b6d4;
+            --purple:   #8b5cf6;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { background: var(--bg); font-family: 'Inter', sans-serif; color: var(--text-1); min-height: 100vh; }
+
+        /* NAV */
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(9,20,35,0.95); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 40px; height: 60px;
+        }
+        .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .nav-logo { width: 28px; height: 28px; background: var(--accent); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+        .nav-logo svg { width: 15px; height: 15px; color: #fff; }
+        .nav-name { font-size: 1rem; font-weight: 700; color: var(--text-1); }
+        .nav-links { display: flex; align-items: center; gap: 4px; }
+        .nav-link {
+            display: flex; align-items: center; gap: 6px;
+            padding: 6px 14px; border-radius: 7px;
+            font-size: 0.82rem; font-weight: 500; color: var(--text-2);
+            text-decoration: none; transition: all 0.15s;
+        }
+        .nav-link svg { width: 14px; height: 14px; }
+        .nav-link:hover { color: var(--text-1); background: rgba(255,255,255,0.05); }
+        .nav-link.active { color: #60a5fa; background: rgba(37,99,235,0.1); }
+
+        /* HERO */
+        .hero {
+            padding: 52px 40px 40px;
+            background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(37,99,235,0.14) 0%, transparent 65%);
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+            position: relative; overflow: hidden;
+        }
+        .hero::after {
+            content: '';
+            position: absolute; inset: 0;
+            background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(ellipse 80% 100% at 50% 0%, black 30%, transparent 80%);
+        }
+        .hero-eyebrow {
+            display: inline-flex; align-items: center; gap: 7px;
+            background: rgba(37,99,235,0.12); border: 1px solid rgba(37,99,235,0.3);
+            border-radius: 20px; padding: 4px 14px;
+            font-size: 0.72rem; font-weight: 600; color: #60a5fa;
+            letter-spacing: 0.06em; text-transform: uppercase;
+            margin-bottom: 20px; position: relative; z-index: 1;
+        }
+        .eyebrow-dot { width: 5px; height: 5px; border-radius: 50%; background: #60a5fa; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+        .hero-title { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text-1); margin-bottom: 8px; position: relative; z-index: 1; }
+        .hero-sub { font-size: 0.95rem; color: var(--text-2); position: relative; z-index: 1; }
+
+        /* CONTAINER */
+        .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+        /* STATS BAR */
+        .stats-bar {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 12px; overflow: hidden;
+            margin: 28px 0 32px;
+        }
+        .stat-item { padding: 20px 22px; border-right: 1px solid var(--border); }
+        .stat-item:last-child { border-right: none; }
+        .stat-number { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text-1); margin-bottom: 4px; }
+        .stat-number.blue   { color: #60a5fa; }
+        .stat-number.cyan   { color: var(--cyan); }
+        .stat-number.green  { color: var(--success); }
+        .stat-label { font-size: 0.72rem; color: var(--text-3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+        .valid-pill   { display: inline-flex; align-items: center; gap: 6px; background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); color: var(--success); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .invalid-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); color: var(--error); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .pill-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+        /* BLOCK CARDS */
+        .block-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 14px; margin-bottom: 12px;
+            transition: border-color 0.2s, transform 0.15s;
+            overflow: hidden;
+        }
+        .block-card:hover { border-color: rgba(37,99,235,0.4); transform: translateY(-1px); }
+        .block-card.genesis { opacity: 0.7; }
+        .block-card.genesis:hover { border-color: var(--border2); }
+
+        .block-head {
+            background: rgba(255,255,255,0.02);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .block-head-left { display: flex; align-items: center; gap: 10px; }
+        .block-num {
+            font-size: 0.9rem; font-weight: 700; color: #60a5fa;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .block-tag {
+            font-size: 0.65rem; font-weight: 600; padding: 2px 8px;
+            border-radius: 4px; text-transform: uppercase; letter-spacing: 0.06em;
+        }
+        .tag-genesis { background: rgba(71,85,105,0.3); color: var(--text-3); }
+        .tag-update  { background: rgba(6,182,212,0.12); color: var(--cyan); border: 1px solid rgba(6,182,212,0.25); }
+        .block-time { font-size: 0.72rem; color: var(--text-3); font-family: 'JetBrains Mono', monospace; }
+
+        .block-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; }
+        .field-row { display: flex; align-items: flex-start; gap: 14px; }
+        .field-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+        .field-icon svg { width: 13px; height: 13px; }
+        .icon-file   { background: rgba(37,99,235,0.1);  } .icon-file svg   { color: #60a5fa; }
+        .icon-signer { background: rgba(6,182,212,0.1);  } .icon-signer svg { color: var(--cyan); }
+        .icon-hash   { background: rgba(34,197,94,0.1);  } .icon-hash svg   { color: var(--success); }
+        .icon-cert   { background: rgba(139,92,246,0.1); } .icon-cert svg   { color: var(--purple); }
+        .icon-parent { background: rgba(6,182,212,0.1);  } .icon-parent svg { color: var(--cyan); }
+        .icon-block  { background: rgba(37,99,235,0.1);  } .icon-block svg  { color: #60a5fa; }
+        .icon-prev   { background: rgba(245,158,11,0.1); } .icon-prev svg   { color: var(--warn); }
+
+        .field-content {}
+        .field-label { font-size: 0.68rem; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 3px; }
+        .field-value { font-size: 0.78rem; color: var(--text-2); word-break: break-all; }
+        .val-mono    { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; }
+        .val-green   { color: var(--success); }
+        .val-cyan    { color: var(--cyan); }
+        .val-warn    { color: var(--warn); }
+        .val-white   { color: var(--text-1); font-weight: 600; }
+        .val-purple  { color: var(--purple); }
+
+        /* CHAIN CONNECTOR */
+        .chain-connector {
+            display: flex; align-items: center; justify-content: center;
+            height: 28px; margin: -6px 0; position: relative; z-index: 1;
+        }
+        .chain-connector::before {
+            content: '';
+            width: 1px; height: 100%;
+            background: linear-gradient(180deg, var(--border2), var(--border));
+        }
+        .chain-arrow {
+            position: absolute;
+            width: 22px; height: 22px; border-radius: 50%;
+            background: var(--bg-card); border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .chain-arrow svg { width: 11px; height: 11px; color: var(--text-3); }
+
+        /* FOOTER */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 24px 40px; margin-top: 60px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 12px;
+        }
+        .footer-brand { display: flex; align-items: center; gap: 8px; }
+        .footer-name  { font-size: 0.82rem; font-weight: 600; color: var(--text-1); }
+        .footer-copy  { font-size: 0.75rem; color: var(--text-3); }
+        .footer-badges { display: flex; align-items: center; gap: 16px; }
+        .footer-badge { display: flex; align-items: center; gap: 5px; font-size: 0.72rem; color: var(--text-3); }
+        .footer-badge svg { color: var(--success); width: 11px; height: 11px; }
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg">
-    <div class="container">
-        <a class="navbar-brand">🔐 DocSign Blockchain</a>
-        <div class="navbar-nav ms-auto">
-            <a class="nav-link" href="/">✍️ Sign</a>
-            <a class="nav-link" href="/verify">🔍 Verify</a>
-            <a class="nav-link active" href="/explorer">⛓️ Explorer</a>
+
+<!-- NAV -->
+<nav>
+    <a href="/" class="nav-brand">
+        <div class="nav-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
         </div>
+        <span class="nav-name">UniVerify</span>
+    </a>
+    <div class="nav-links">
+        <a href="/dashboard" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Sign
+        </a>
+        <a href="/verify" class="nav-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            Verify
+        </a>
+        <a href="/explorer" class="nav-link active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="6" height="6" rx="1"/><rect x="9" y="7" width="6" height="6" rx="1"/><rect x="16" y="7" width="6" height="6" rx="1"/><path d="M5 13v3M12 13v3M19 13v3"/></svg>
+            Explorer
+        </a>
     </div>
 </nav>
 
+<!-- HERO -->
 <div class="hero">
-    <div class="container text-center">
-        <h1>⛓️ Blockchain Explorer</h1>
-        <p style="color:#aaa;">View all blocks and transactions on the chain</p>
-    </div>
+    <div class="hero-eyebrow"><div class="eyebrow-dot"></div>Immutable Ledger</div>
+    <h1 class="hero-title">Blockchain Explorer</h1>
+    <p class="hero-sub">View all blocks and transactions on the chain</p>
 </div>
 
-<div class="container mt-4">
-    <!-- Stats Row -->
-    <div class="stats-card">
-        <div class="row">
-            <div class="col-md-3 stat-item">
-                <div class="stat-number">{{ chain|length }}</div>
-                <div class="stat-label">Total Blocks</div>
+<div class="container">
+
+    <!-- STATS -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-number blue">{{ chain|length }}</div>
+            <div class="stat-label">Total Blocks</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">{{ chain|length - 1 }}</div>
+            <div class="stat-label">Documents Signed</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number cyan">SHA-256</div>
+            <div class="stat-label">Hash Algorithm</div>
+        </div>
+        <div class="stat-item">
+            <div id="chainValidBadge" style="margin-bottom:6px;">
+                <span class="valid-pill"><div class="pill-dot" style="background:var(--success);"></div>VALID</span>
             </div>
-            <div class="col-md-3 stat-item">
-                <div class="stat-number">{{ chain|length - 1 }}</div>
-                <div class="stat-label">Documents Signed</div>
-            </div>
-            <div class="col-md-3 stat-item">
-                <div class="stat-number" style="color:#00ff41;">SHA-256</div>
-                <div class="stat-label">Hash Algorithm</div>
-            </div>
-            <div class="col-md-3 stat-item">
-                <div id="chainValidBadge">
-                    <span class="valid-badge">✅ VALID</span>
-                </div>
-                <div class="stat-label mt-1">Chain Status</div>
-            </div>
+            <div class="stat-label">Chain Status</div>
         </div>
     </div>
 
-    <!-- Blocks -->
+    <!-- BLOCKS -->
     <div id="blocksContainer">
         {% for block in chain|reverse %}
+
         <div class="block-card {% if block.filename == 'GENESIS' %}genesis{% endif %}">
-            <div class="block-header">
-                <div>
-                    <span class="block-index">Block #{{ block.index }}</span>
+            <div class="block-head">
+                <div class="block-head-left">
+                    <span class="block-num">Block #{{ block.index }}</span>
                     {% if block.filename == 'GENESIS' %}
-                        <span style="color:#555; font-size:0.8rem; margin-left:10px;">GENESIS BLOCK</span>
+                        <span class="block-tag tag-genesis">Genesis Block</span>
                     {% endif %}
                     {% if block.parent_hash %}
-                        <span style="color:#00bcd4; font-size:0.8rem; margin-left:10px;">🔄 VERSION UPDATE</span>
+                        <span class="block-tag tag-update">Version Update</span>
                     {% endif %}
                 </div>
-                <div class="block-time">{{ block.timestamp }}</div>
+                <span class="block-time">{{ block.timestamp }}</span>
             </div>
+
             <div class="block-body">
                 {% if block.filename != 'GENESIS' %}
                 <div class="field-row">
-                    <span class="field-label">📄 Filename</span>
-                    <span class="field-value filename-val">{{ block.filename }}</span>
+                    <div class="field-icon icon-file">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    </div>
+                    <div class="field-content">
+                        <div class="field-label">Filename</div>
+                        <div class="field-value val-white">{{ block.filename }}</div>
+                    </div>
                 </div>
+
                 <div class="field-row">
-                    <span class="field-label">📧 Signer</span>
-                    <span class="field-value email-val">{{ block.email }}</span>
+                    <div class="field-icon icon-signer">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <div class="field-content">
+                        <div class="field-label">Signer</div>
+                        <div class="field-value val-cyan">{{ block.email }}</div>
+                    </div>
                 </div>
+
                 <div class="field-row">
-                    <span class="field-label">🔒 File Hash</span>
-                    <span class="field-value hash-val">{{ block.file_hash }}</span>
+                    <div class="field-icon icon-hash">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                    <div class="field-content">
+                        <div class="field-label">File Hash</div>
+                        <div class="field-value val-mono val-green">{{ block.file_hash }}</div>
+                    </div>
                 </div>
+
                 <div class="field-row">
-                    <span class="field-label">🏆 Cert Fingerprint</span>
-                    <span class="field-value" style="font-family:monospace; color:#aaa; font-size:0.75rem;">{{ block.cert_fingerprint }}</span>
+                    <div class="field-icon icon-cert">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+                    </div>
+                    <div class="field-content">
+                        <div class="field-label">Cert Fingerprint</div>
+                        <div class="field-value val-mono val-purple">{{ block.cert_fingerprint }}</div>
+                    </div>
                 </div>
+
                 {% if block.parent_hash %}
                 <div class="field-row">
-                    <span class="field-label">🔗 Parent Hash</span>
-                    <span class="field-value hash-parent">{{ block.parent_hash }}</span>
+                    <div class="field-icon icon-parent">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    </div>
+                    <div class="field-content">
+                        <div class="field-label">Parent Hash (Previous Version)</div>
+                        <div class="field-value val-mono val-cyan">{{ block.parent_hash }}</div>
+                    </div>
                 </div>
                 {% endif %}
                 {% endif %}
+
                 <div class="field-row">
-                    <span class="field-label">⛓️ Block Hash</span>
-                    <span class="field-value hash-val">{{ block.hash }}</span>
+                    <div class="field-icon icon-block">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="6" height="6" rx="1"/><rect x="9" y="7" width="6" height="6" rx="1"/><rect x="16" y="7" width="6" height="6" rx="1"/><path d="M5 13v3M12 13v3M19 13v3"/></svg>
+                    </div>
+                    <div class="field-content">
+                        <div class="field-label">Block Hash</div>
+                        <div class="field-value val-mono val-green">{{ block.hash }}</div>
+                    </div>
                 </div>
-                <div class="field-row" style="margin-bottom:0;">
-                    <span class="field-label">🔙 Prev Hash</span>
-                    <span class="field-value hash-prev">{{ block.previous_hash }}</span>
+
+                <div class="field-row">
+                    <div class="field-icon icon-prev">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                    </div>
+                    <div class="field-content">
+                        <div class="field-label">Prev Hash</div>
+                        <div class="field-value val-mono val-warn">{{ block.previous_hash }}</div>
+                    </div>
                 </div>
             </div>
         </div>
+
         {% if not loop.last %}
-        <div class="chain-line">⬆️</div>
+        <div class="chain-connector">
+            <div class="chain-arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+            </div>
+        </div>
         {% endif %}
+
         {% endfor %}
     </div>
+
 </div>
 
-<div class="footer">
-    <div class="container">
-        <small>TLS/SSL Authenticated Document Signing & Verification System with Blockchain · Computer Security Project</small>
+<!-- FOOTER -->
+<footer>
+    <div class="footer-brand">
+        <div class="nav-logo" style="width:24px;height:24px;border-radius:5px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="footer-name">UniVerify</span>
     </div>
-</div>
+    <div class="footer-badges">
+        <div class="footer-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>TLS 1.3</div>
+        <div class="footer-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>SHA-256</div>
+        <div class="footer-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>X.509</div>
+    </div>
+    <div class="footer-copy">TLS/SSL Document Signing &amp; Verification · Computer Security Project</div>
+</footer>
 
 <script>
 async function checkChainValidity() {
@@ -153,8 +371,8 @@ async function checkChainValidity() {
         const res = await fetch('/api/chain-status');
         const data = await res.json();
         document.getElementById('chainValidBadge').innerHTML = data.valid
-            ? '<span class="valid-badge">✅ VALID</span>'
-            : '<span class="invalid-badge">🚨 TAMPERED</span>';
+            ? '<span class="valid-pill"><div class="pill-dot" style="background:var(--success);"></div>VALID</span>'
+            : '<span class="invalid-pill"><div class="pill-dot" style="background:var(--error);"></div>TAMPERED</span>';
     } catch(e) {}
 }
 checkChainValidity();
