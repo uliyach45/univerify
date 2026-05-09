@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniVerify — Student Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body { background: #0a0a0a; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; }
+        .navbar { background: #0d0d0d !important; border-bottom: 1px solid #1a1a1a; }
+        .navbar-brand { color: #00ff41 !important; font-weight: 800; font-size: 1.2rem; }
+        .nav-link { color: #666 !important; font-size: 0.88rem; }
+        .nav-link:hover { color: #00ff41 !important; }
+        .welcome-banner { background: linear-gradient(135deg, #0d1a0d, #0a0a0a); border: 1px solid #1a3a1a; border-radius: 16px; padding: 28px 32px; margin-bottom: 28px; }
+        .welcome-name { color: #00ff41; font-size: 1.6rem; font-weight: 700; }
+        .welcome-sub { color: #555; font-size: 0.9rem; margin-top: 4px; }
+        .info-pill { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 20px; padding: 6px 16px; font-size: 0.8rem; color: #888; display: inline-block; margin-right: 8px; margin-top: 12px; }
+        .info-pill span { color: #00bcd4; }
+        .doc-card { background: #111; border: 1px solid #1a1a1a; border-radius: 12px; padding: 20px; margin-bottom: 16px; transition: all 0.2s; position: relative; overflow: hidden; }
+        .doc-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #00ff41; }
+        .doc-card.revoked::before { background: #ff4444; }
+        .doc-card:hover { border-color: #2a2a2a; transform: translateY(-2px); }
+        .doc-name { color: #e0e0e0; font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+        .doc-meta { color: #555; font-size: 0.8rem; }
+        .doc-type-badge { background: #1a1a0d; color: #ffa500; border: 1px solid #3a3a0d; border-radius: 6px; padding: 3px 10px; font-size: 0.75rem; display: inline-block; }
+        .doc-status-active { background: #0d1f0d; color: #00ff41; border: 1px solid #1a3a1a; border-radius: 6px; padding: 3px 10px; font-size: 0.75rem; display: inline-block; }
+        .doc-status-revoked { background: #1f0d0d; color: #ff4444; border: 1px solid #3a1a1a; border-radius: 6px; padding: 3px 10px; font-size: 0.75rem; display: inline-block; }
+        .hash-text { font-family: monospace; font-size: 0.75rem; color: #00ff41; word-break: break-all; }
+        .btn-view-qr { background: transparent; border: 1px solid #333; color: #888; border-radius: 6px; padding: 5px 12px; font-size: 0.78rem; cursor: pointer; transition: all 0.2s; }
+        .btn-view-qr:hover { border-color: #00ff41; color: #00ff41; }
+        .btn-share { background: transparent; border: 1px solid #333; color: #888; border-radius: 6px; padding: 5px 12px; font-size: 0.78rem; cursor: pointer; transition: all 0.2s; }
+        .btn-share:hover { border-color: #00bcd4; color: #00bcd4; }
+        .empty-state { text-align: center; padding: 60px 20px; }
+        .empty-icon { font-size: 4rem; margin-bottom: 16px; }
+        .empty-title { color: #555; font-size: 1.1rem; margin-bottom: 8px; }
+        .empty-sub { color: #333; font-size: 0.85rem; }
+        .qr-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 1000; align-items: center; justify-content: center; }
+        .qr-modal.show { display: flex; }
+        .qr-box { background: #111; border: 1px solid #333; border-radius: 16px; padding: 32px; text-align: center; max-width: 320px; }
+        .qr-box img { width: 200px; height: 200px; border: 3px solid #00ff41; border-radius: 8px; }
+        .btn-close-modal { background: #333; border: none; color: #e0e0e0; border-radius: 8px; padding: 8px 20px; margin-top: 16px; cursor: pointer; }
+        .stats-row { display: flex; gap: 16px; margin-bottom: 28px; }
+        .mini-stat { background: #111; border: 1px solid #1a1a1a; border-radius: 10px; padding: 16px 20px; flex: 1; text-align: center; }
+        .mini-num { font-size: 1.6rem; font-weight: 700; }
+        .mini-label { color: #555; font-size: 0.78rem; margin-top: 2px; }
+        .verify-section { background: #111; border: 1px solid #1a1a1a; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+        .form-control { background: #1a1a1a; border: 1px solid #333; color: #e0e0e0; border-radius: 8px; padding: 10px 14px; }
+        .form-control:focus { background: #1a1a1a; border-color: #00ff41; color: #e0e0e0; box-shadow: none; }
+        .btn-verify { background: #00bcd4; color: #000; font-weight: 700; border: none; border-radius: 8px; padding: 10px 20px; cursor: pointer; }
+        .result-auth { background: #0d1f0d; border: 1px solid #00ff41; border-radius: 8px; padding: 16px; margin-top: 12px; }
+        .result-fail { background: #1f0d0d; border: 1px solid #ff4444; border-radius: 8px; padding: 16px; margin-top: 12px; }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid px-4">
+        <span class="navbar-brand">🎓 UniVerify</span>
+        <div class="navbar-nav ms-auto d-flex flex-row gap-3 align-items-center">
+            <a class="nav-link" href="/verify">🔍 Verify Document</a>
+            <span style="color:#333;">|</span>
+            <span style="color:#888; font-size:0.85rem;">{{ current_user.full_name }}</span>
+            <a href="/logout" style="background:transparent; border:1px solid #333; color:#666; border-radius:8px; padding:6px 14px; font-size:0.82rem; text-decoration:none;">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid px-4 py-4">
+    <div class="welcome-banner">
+        <div class="welcome-name">👋 Welcome, {{ current_user.full_name }}!</div>
+        <div class="welcome-sub">Your documents are secured on the blockchain</div>
+        <div>
+            {% if current_user.reg_number %}
+            <span class="info-pill">Reg# <span>{{ current_user.reg_number }}</span></span>
+            {% endif %}
+            {% if current_user.department %}
+            <span class="info-pill">Dept <span>{{ current_user.department }}</span></span>
+            {% endif %}
+            <span class="info-pill">Role <span>{{ current_user.role }}</span></span>
+            <span class="info-pill">Email <span>{{ current_user.email }}</span></span>
+        </div>
+    </div>
+
+    <div class="stats-row">
+        <div class="mini-stat">
+            <div class="mini-num" style="color:#00ff41;">{{ documents|length }}</div>
+            <div class="mini-label">Total Documents</div>
+        </div>
+        <div class="mini-stat">
+            <div class="mini-num" style="color:#00bcd4;">{{ documents|selectattr('status','equalto','active')|list|length }}</div>
+            <div class="mini-label">Active</div>
+        </div>
+        <div class="mini-stat">
+            <div class="mini-num" style="color:#ff4444;">{{ documents|selectattr('status','equalto','revoked')|list|length }}</div>
+            <div class="mini-label">Revoked</div>
+        </div>
+        <div class="mini-stat">
+            <div class="mini-num" style="color:#ffa500;">⛓️</div>
+            <div class="mini-label">Blockchain Secured</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <h5 style="color:#e0e0e0; margin-bottom:16px; font-size:1rem;">📄 My Documents</h5>
+
+            {% if documents %}
+                {% for doc in documents %}
+                <div class="doc-card {{ 'revoked' if doc.status == 'revoked' else '' }}">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
+                        <div style="flex:1;">
+                            <div class="doc-name">{{ doc.original_name }}</div>
+                            <div class="doc-meta" style="margin-bottom:8px;">
+                                Signed: {{ doc.signed_at.strftime('%B %d, %Y at %H:%M') }}
+                                {% if doc.expires_at %}
+                                · Expires: {{ doc.expires_at.strftime('%B %d, %Y') }}
+                                {% endif %}
+                            </div>
+                            <span class="doc-type-badge">{{ doc.doc_type }}</span>
+                            <span class="doc-status-{{ doc.status }}" style="margin-left:6px;">{{ doc.status }}</span>
+                        </div>
+                        <div style="display:flex; gap:8px; flex-shrink:0;">
+                            {% if doc.qr_code_path %}
+                            <button class="btn-view-qr" onclick="showQR('{{ doc.qr_code_path }}', '{{ doc.original_name }}')">📱 QR Code</button>
+                            {% endif %}
+                            <button class="btn-share" onclick="shareDoc('{{ doc.file_hash }}')">🔗 Share</button>
+                        </div>
+                    </div>
+                    <div style="margin-top:12px; padding-top:12px; border-top:1px solid #1a1a1a;">
+                        <div style="color:#555; font-size:0.75rem; margin-bottom:3px;">SHA-256 File Hash:</div>
+                        <div class="hash-text">{{ doc.file_hash }}</div>
+                    </div>
+                    <div style="margin-top:8px;">
+                        <div style="color:#555; font-size:0.75rem; margin-bottom:3px;">Block Hash:</div>
+                        <div class="hash-text" style="color:#ffa500;">{{ doc.block_hash }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <div class="empty-title">No documents yet</div>
+                    <div class="empty-sub">Your signed documents will appear here once an admin issues them</div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4">
+            <div class="verify-section">
+                <h6 style="color:#e0e0e0; margin-bottom:16px;">🔍 Quick Verify</h6>
+                <p style="color:#555; font-size:0.83rem; margin-bottom:16px;">Upload any document to check if it's authentic</p>
+                <input type="file" id="vFile" class="form-control mb-3" accept=".pdf,.docx,.xlsx,.txt">
+                <button class="btn-verify w-100" onclick="quickVerify()">🔍 Check Authenticity</button>
+                <div id="vResult"></div>
+            </div>
+
+            <div style="background:#111; border:1px solid #1a1a1a; border-radius:12px; padding:20px;">
+                <h6 style="color:#e0e0e0; margin-bottom:16px;">ℹ️ How to share your document</h6>
+                <div style="color:#555; font-size:0.82rem; line-height:1.8;">
+                    <div>1️⃣ Click <span style="color:#00bcd4;">🔗 Share</span> on any document</div>
+                    <div>2️⃣ Copy the verification link</div>
+                    <div>3️⃣ Anyone can verify without login</div>
+                    <div>4️⃣ Or use <span style="color:#00ff41;">📱 QR Code</span> for instant scan</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- QR Modal -->
+<div class="qr-modal" id="qrModal" onclick="closeQR()">
+    <div class="qr-box" onclick="event.stopPropagation()">
+        <div style="color:#00ff41; font-weight:bold; margin-bottom:12px;">📱 Scan to Verify</div>
+        <img id="qrImg" src="" alt="QR Code">
+        <div id="qrDocName" style="color:#888; font-size:0.82rem; margin-top:10px;"></div>
+        <div style="color:#555; font-size:0.75rem; margin-top:6px;">Scan with any phone camera</div>
+        <button class="btn-close-modal" onclick="closeQR()">Close</button>
+    </div>
+</div>
+
+<script>
+function showQR(path, name) {
+    document.getElementById('qrImg').src = '/' + path;
+    document.getElementById('qrDocName').textContent = name;
+    document.getElementById('qrModal').classList.add('show');
+}
+function closeQR() { document.getElementById('qrModal').classList.remove('show'); }
+
+function shareDoc(hash) {
+    const url = `https://localhost:5000/public/verify/${hash}`;
+    navigator.clipboard.writeText(url).then(() => {
+        alert('✅ Verification link copied!\n\n' + url + '\n\nAnyone can use this link to verify your document.');
+    }).catch(() => {
+        prompt('Copy this verification link:', url);
+    });
+}
+
+async function quickVerify() {
+    const fi = document.getElementById('vFile');
+    if (!fi.files[0]) { alert('Select a file!'); return; }
+    const fd = new FormData();
+    fd.append('file', fi.files[0]);
+    const box = document.getElementById('vResult');
+    box.innerHTML = '<div style="color:#555; margin-top:12px; font-size:0.85rem;">⏳ Checking...</div>';
+    try {
+        const res = await fetch('/api/verify', { method: 'POST', body: fd });
+        const d = await res.json();
+        if (d.status === 'authentic') {
+            box.innerHTML = `<div class="result-auth">
+                <div style="color:#00ff41; font-weight:bold;">✅ AUTHENTIC</div>
+                <div style="color:#aaa; font-size:0.8rem; margin-top:6px;">Signed by: ${d.signer_email}</div>
+                <div style="color:#555; font-size:0.78rem;">${d.timestamp}</div>
+            </div>`;
+        } else {
+            box.innerHTML = `<div class="result-fail">
+                <div style="color:#ff4444; font-weight:bold;">🚨 NOT VERIFIED</div>
+                <div style="color:#aaa; font-size:0.8rem; margin-top:6px;">Document not found on blockchain</div>
+            </div>`;
+        }
+    } catch(e) { box.innerHTML = '<div style="color:#ff4444; margin-top:8px;">Error checking document</div>'; }
+}
+</script>
+</body>
+</html>

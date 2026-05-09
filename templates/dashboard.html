@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniVerify — Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body { margin: 0; }
+        .sidebar { width: 240px; background: var(--bg-dark); border-right: 1px solid #1a1a1a; height: 100vh; position: fixed; left: 0; top: 0; padding: 20px 0; z-index: 100; }
+        .sidebar-logo { padding: 0 20px 24px; border-bottom: 1px solid #1a1a1a; margin-bottom: 16px; }
+        .sidebar-logo .title { color: #00ff41; font-size: 1.3rem; font-weight: 800; }
+        .sidebar-logo .sub { color: #444; font-size: 0.75rem; }
+        .nav-item { padding: 10px 20px; cursor: pointer; color: #666; font-size: 0.88rem; display: flex; align-items: center; gap: 10px; transition: all 0.2s; border-left: 3px solid transparent; }
+        .nav-item:hover, .nav-item.active { color: #00ff41; background: #0d1a0d; border-left-color: #00ff41; }
+        .nav-section { color: #333; font-size: 0.7rem; padding: 16px 20px 6px; text-transform: uppercase; letter-spacing: 1px; }
+        .main { margin-left: 240px; padding: 28px; min-height: 100vh; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+        .page-title { color: #e0e0e0; font-size: 1.4rem; font-weight: 600; }
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 36px; height: 36px; background: #00ff41; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000; font-weight: 700; font-size: 0.9rem; }
+        .stat-card { background: #111; border: 1px solid #1a1a1a; border-radius: 12px; padding: 20px 24px; position: relative; overflow: hidden; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+        .stat-green::before { background: #00ff41; }
+        .stat-blue::before { background: #00bcd4; }
+        .stat-orange::before { background: #ffa500; }
+        .stat-red::before { background: #ff4444; }
+        .stat-number { font-size: 2.2rem; font-weight: 800; margin-bottom: 4px; }
+        .stat-label { color: #666; font-size: 0.82rem; }
+        .stat-icon { position: absolute; right: 20px; top: 20px; font-size: 2rem; opacity: 0.3; }
+        .card { background: #111; border: 1px solid #1a1a1a; border-radius: 12px; }
+        .card-header-custom { padding: 16px 20px; border-bottom: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; }
+        .card-header-custom h6 { margin: 0; color: #e0e0e0; font-size: 0.95rem; font-weight: 600; }
+        .table { color: #e0e0e0; margin: 0; }
+        .table th { color: #555; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; border-color: #1a1a1a; padding: 12px 16px; font-weight: 500; }
+        .table td { border-color: #1a1a1a; padding: 12px 16px; font-size: 0.85rem; vertical-align: middle; }
+        .table tbody tr:hover { background: #141414; }
+        .badge-active { background: #0d1f0d; color: #00ff41; border: 1px solid #00ff41; border-radius: 20px; padding: 3px 10px; font-size: 0.75rem; }
+        .badge-revoked { background: #1f0d0d; color: #ff4444; border: 1px solid #ff4444; border-radius: 20px; padding: 3px 10px; font-size: 0.75rem; }
+        .badge-role-admin { background: #1a0d1f; color: #c77dff; border: 1px solid #7b2d8b; border-radius: 20px; padding: 3px 10px; font-size: 0.75rem; }
+        .badge-role-student { background: #0d1a1f; color: #00bcd4; border: 1px solid #006978; border-radius: 20px; padding: 3px 10px; font-size: 0.75rem; }
+        .sign-panel { background: #111; border: 1px solid #1a1a1a; border-radius: 12px; padding: 24px; }
+        .form-control, .form-select { background: #1a1a1a; border: 1px solid #333; color: #e0e0e0; border-radius: 8px; padding: 10px 14px; font-size: 0.88rem; }
+        .form-control:focus, .form-select:focus { background: #1a1a1a; border-color: #00ff41; color: #e0e0e0; box-shadow: 0 0 0 2px rgba(0,255,65,0.1); }
+        .form-label { color: #888; font-size: 0.82rem; margin-bottom: 5px; }
+        .btn-sign { background: #00ff41; color: #000; font-weight: 700; border: none; border-radius: 8px; padding: 11px 24px; font-size: 0.9rem; cursor: pointer; }
+        .btn-sign:hover { background: #00cc33; }
+        .btn-revoke { background: transparent; border: 1px solid #ff4444; color: #ff4444; border-radius: 6px; padding: 4px 10px; font-size: 0.78rem; cursor: pointer; }
+        .btn-revoke:hover { background: #ff4444; color: #fff; }
+        .upload-zone { border: 2px dashed #333; border-radius: 8px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .upload-zone:hover { border-color: #00ff41; background: #0d1a0d; }
+        .chain-status { display: flex; align-items: center; gap: 8px; }
+        .chain-dot { width: 8px; height: 8px; border-radius: 50%; background: #00ff41; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        .search-bar { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 9px 16px; color: #e0e0e0; width: 280px; font-size: 0.88rem; }
+        .search-bar:focus { outline: none; border-color: #00ff41; }
+        .result-box { background: #0d1f0d; border: 1px solid #00ff41; border-radius: 8px; padding: 16px; margin-top: 12px; display: none; }
+        .result-error { background: #1f0d0d; border-color: #ff4444; }
+        .hash-small { font-family: monospace; font-size: 0.75rem; color: #00ff41; }
+        .log-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid #1a1a1a; font-size: 0.82rem; }
+        .log-time { color: #444; min-width: 80px; }
+        .log-action { color: #00bcd4; min-width: 160px; }
+        .log-detail { color: #666; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .logout-btn { background: transparent; border: 1px solid #333; color: #666; border-radius: 8px; padding: 7px 14px; font-size: 0.82rem; cursor: pointer; }
+        .logout-btn:hover { border-color: #ff4444; color: #ff4444; }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <div class="sidebar-logo">
+        <div class="title">🎓 UniVerify</div>
+        <div class="sub">Admin Dashboard</div>
+    </div>
+    <div class="nav-section">Main</div>
+    <div class="nav-item active" onclick="showSection('overview', this)">📊 Overview</div>
+    <div class="nav-item" onclick="showSection('sign', this)">✍️ Sign Document</div>
+    <div class="nav-item" onclick="showSection('documents', this)">📄 All Documents</div>
+    <div class="nav-section">Management</div>
+    <div class="nav-item" onclick="showSection('users', this)">👥 Users</div>
+    <div class="nav-item" onclick="showSection('search', this)">🔍 Search</div>
+    <div class="nav-item" onclick="showSection('audit', this)">📋 Audit Logs</div>
+    <div class="nav-section">Blockchain</div>
+    <div class="nav-item" onclick="window.open('/explorer','_blank')">⛓️ Explorer</div>
+    <div class="nav-item" onclick="showSection('chain', this)">🔒 Chain Status</div>
+</div>
+
+<div class="main">
+    <div class="topbar">
+        <div class="page-title" id="pageTitle">📊 Overview</div>
+        <div class="user-info">
+            <input class="search-bar" placeholder="🔍 Quick search..." oninput="quickSearch(this.value)">
+            <div class="avatar">A</div>
+            <span style="color:#888; font-size:0.85rem;">{{ current_user.full_name if current_user else 'Admin' }}</span>
+            <button class="logout-btn" onclick="window.location.href='/logout'">Logout</button>
+        </div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div class="section active" id="sec-overview">
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card stat-green">
+                    <div class="stat-icon">📄</div>
+                    <div class="stat-number" style="color:#00ff41" id="s-total">{{ total_docs }}</div>
+                    <div class="stat-label">Total Documents</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card stat-blue">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-number" style="color:#00bcd4" id="s-users">{{ total_users }}</div>
+                    <div class="stat-label">Registered Users</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card stat-orange">
+                    <div class="stat-icon">⛓️</div>
+                    <div class="stat-number" style="color:#ffa500" id="s-chain">{{ chain_length }}</div>
+                    <div class="stat-label">Blockchain Blocks</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card stat-red">
+                    <div class="stat-icon">🔒</div>
+                    <div class="stat-number" style="color:{{ '#00ff41' if chain_valid else '#ff4444' }}" id="s-valid">
+                        {{ 'VALID' if chain_valid else 'TAMPERED' }}
+                    </div>
+                    <div class="stat-label">Chain Integrity</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-7">
+                <div class="card">
+                    <div class="card-header-custom">
+                        <h6>📄 Recent Documents</h6>
+                        <span style="color:#555; font-size:0.8rem;">Last 5 signed</span>
+                    </div>
+                    <table class="table">
+                        <thead><tr><th>Document</th><th>Type</th><th>Owner</th><th>Status</th></tr></thead>
+                        <tbody>
+                        {% for doc in recent_docs %}
+                        <tr>
+                            <td>{{ doc.original_name[:25] }}{% if doc.original_name|length > 25 %}...{% endif %}</td>
+                            <td><span style="color:#ffa500">{{ doc.doc_type }}</span></td>
+                            <td style="color:#00bcd4">{{ doc.owner.email if doc.owner else 'N/A' }}</td>
+                            <td><span class="badge-{{ doc.status }}">{{ doc.status }}</span></td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="4" style="color:#444; text-align:center; padding:24px;">No documents yet. Sign your first document!</td></tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="card">
+                    <div class="card-header-custom">
+                        <h6>📋 Recent Activity</h6>
+                        <div class="chain-status"><div class="chain-dot"></div><span style="color:#444; font-size:0.78rem;">Live</span></div>
+                    </div>
+                    <div style="padding:12px 16px; max-height:240px; overflow-y:auto;">
+                        {% for log in recent_logs %}
+                        <div class="log-item">
+                            <span class="log-time">{{ log.timestamp.strftime('%H:%M:%S') }}</span>
+                            <span class="log-action">{{ log.action }}</span>
+                            <span class="log-detail">{{ (log.details or '')[:30] }}</span>
+                        </div>
+                        {% else %}
+                        <div style="color:#444; text-align:center; padding:20px; font-size:0.85rem;">No activity yet</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIGN DOCUMENT -->
+    <div class="section" id="sec-sign">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="sign-panel">
+                    <h5 style="color:#e0e0e0; margin-bottom:24px;">✍️ Sign & Issue Document</h5>
+                    <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+                        <div style="font-size:2.5rem;">📄</div>
+                        <div style="color:#aaa; margin-top:8px;">Click to upload document</div>
+                        <div style="color:#555; font-size:0.8rem;">PDF, DOCX, XLSX, TXT</div>
+                        <div id="fname" style="color:#00ff41; margin-top:6px; font-weight:bold;"></div>
+                    </div>
+                    <input type="file" id="fileInput" accept=".pdf,.docx,.xlsx,.txt" style="display:none" onchange="selFile(this)">
+                    <div class="row mt-3">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Student Email</label>
+                            <input type="email" id="studentEmail" class="form-control" placeholder="student@uni.edu">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Document Type</label>
+                            <select id="docType" class="form-select">
+                                <option value="transcript">Transcript</option>
+                                <option value="certificate">Certificate</option>
+                                <option value="degree">Degree</option>
+                                <option value="letter">Letter</option>
+                                <option value="general">General</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Expiry (days, 0 = never)</label>
+                        <input type="number" id="expiryDays" class="form-control" value="0" min="0">
+                    </div>
+                    <button class="btn-sign w-100" onclick="signDoc()">🔏 Sign & Record on Blockchain</button>
+                    <div id="signResult" class="result-box mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ALL DOCUMENTS -->
+    <div class="section" id="sec-documents">
+        <div class="card">
+            <div class="card-header-custom">
+                <h6>📄 All Signed Documents</h6>
+                <button onclick="loadDocs()" style="background:transparent; border:1px solid #333; color:#666; border-radius:6px; padding:5px 12px; font-size:0.8rem; cursor:pointer;">🔄 Refresh</button>
+            </div>
+            <div style="overflow-x:auto;">
+                <table class="table" id="docsTable">
+                    <thead><tr><th>Document</th><th>Type</th><th>Owner</th><th>Reg#</th><th>Signed</th><th>Status</th><th>Action</th></tr></thead>
+                    <tbody id="docsBody"><tr><td colspan="7" style="text-align:center; color:#444; padding:24px;">Loading...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="section" id="sec-users">
+        <div class="card">
+            <div class="card-header-custom">
+                <h6>👥 Registered Users</h6>
+                <button onclick="loadUsers()" style="background:transparent; border:1px solid #333; color:#666; border-radius:6px; padding:5px 12px; font-size:0.8rem; cursor:pointer;">🔄 Refresh</button>
+            </div>
+            <table class="table">
+                <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Reg#</th><th>Department</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody id="usersBody"><tr><td colspan="7" style="text-align:center; color:#444; padding:24px;">Loading...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="section" id="sec-search">
+        <div class="card" style="padding:24px;">
+            <h5 style="color:#e0e0e0; margin-bottom:20px;">🔍 Search Documents</h5>
+            <div style="display:flex; gap:12px; margin-bottom:20px;">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search by name, email, reg number, hash..." style="flex:1">
+                <button onclick="doSearch()" class="btn-sign">Search</button>
+            </div>
+            <div id="searchResults"></div>
+        </div>
+    </div>
+
+    <!-- AUDIT LOGS -->
+    <div class="section" id="sec-audit">
+        <div class="card">
+            <div class="card-header-custom">
+                <h6>📋 Audit Logs</h6>
+                <button onclick="loadLogs()" style="background:transparent; border:1px solid #333; color:#666; border-radius:6px; padding:5px 12px; font-size:0.8rem; cursor:pointer;">🔄 Refresh</button>
+            </div>
+            <div style="padding:0 16px;" id="auditBody">
+                <div style="color:#444; text-align:center; padding:24px;">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHAIN STATUS -->
+    <div class="section" id="sec-chain">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card" style="padding:32px; text-align:center;">
+                    <div style="font-size:4rem; margin-bottom:16px;" id="chainIcon">⛓️</div>
+                    <div style="font-size:1.8rem; font-weight:800; margin-bottom:8px;" id="chainStatusText">Checking...</div>
+                    <div style="color:#555; margin-bottom:24px;" id="chainSubtext">Verifying chain integrity...</div>
+                    <div style="background:#1a1a1a; border-radius:8px; padding:20px; text-align:left; margin-bottom:16px;">
+                        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #222;">
+                            <span style="color:#666;">Total Blocks</span>
+                            <span style="color:#00ff41;" id="cBlocks">-</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; padding:8px 0;">
+                            <span style="color:#666;">Hash Algorithm</span>
+                            <span style="color:#00bcd4;">SHA-256</span>
+                        </div>
+                    </div>
+                    <button onclick="checkChain()" class="btn-sign w-100">🔄 Verify Chain Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let selFile2 = null;
+
+function showSection(name, el) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('sec-' + name).classList.add('active');
+    el.classList.add('active');
+    const titles = {overview:'📊 Overview', sign:'✍️ Sign Document', documents:'📄 All Documents', users:'👥 Users', search:'🔍 Search', audit:'📋 Audit Logs', chain:'🔒 Chain Status'};
+    document.getElementById('pageTitle').textContent = titles[name] || name;
+    if (name === 'documents') loadDocs();
+    if (name === 'users') loadUsers();
+    if (name === 'audit') loadLogs();
+    if (name === 'chain') checkChain();
+}
+
+function selFile(input) {
+    if (input.files[0]) { selFile2 = input.files[0]; document.getElementById('fname').textContent = '✅ ' + selFile2.name; }
+}
+
+async function signDoc() {
+    if (!selFile2) { alert('Select a file!'); return; }
+    const fd = new FormData();
+    fd.append('file', selFile2);
+    fd.append('student_email', document.getElementById('studentEmail').value);
+    fd.append('doc_type', document.getElementById('docType').value);
+    fd.append('expiry_days', document.getElementById('expiryDays').value);
+    const box = document.getElementById('signResult');
+    box.style.display = 'block';
+    box.innerHTML = '⏳ Signing...';
+    box.className = 'result-box';
+    try {
+        const res = await fetch('/api/sign', { method: 'POST', body: fd });
+        const d = await res.json();
+        if (d.status === 'signed') {
+            box.innerHTML = `<div style="color:#00ff41; font-weight:bold; margin-bottom:8px;">✅ Document Signed!</div>
+            <div style="font-size:0.82rem; color:#aaa;">Block #${d.block_index}</div>
+            <div style="font-size:0.75rem; font-family:monospace; color:#00ff41; word-break:break-all; margin-top:6px;">${d.block_hash}</div>
+            ${d.qr_code ? `<div style="margin-top:10px;"><img src="/${d.qr_code}" style="width:100px; border:2px solid #00ff41; border-radius:4px;"><br><small style="color:#555;">QR Code for verification</small></div>` : ''}`;
+            loadDocs();
+        } else if (d.status === 'hash_mismatch') {
+            box.className = 'result-box';
+            box.style.background = '#1f1a0d';
+            box.style.border = '1px solid #ffa500';
+            box.innerHTML = `
+                <div style="color:#ffa500; font-weight:bold; margin-bottom:8px;">⚠️ Document Modified!</div>
+                <div style="color:#aaa; font-size:0.85rem; margin-bottom:12px;">${d.message}</div>
+                <div style="background:#111; border-radius:6px; padding:10px; margin-bottom:12px; font-size:0.8rem;">
+                    <div style="color:#888;">Original Signer: <span style="color:#00bcd4;">${d.original_signer}</span></div>
+                    <div style="color:#888; margin-top:4px;">Original Hash: <span style="font-family:monospace; color:#ffa500; font-size:0.75rem;">${d.original_hash.substring(0,32)}...</span></div>
+                </div>
+                <button onclick="requestTokenForUpdate('${document.getElementById('studentEmail').value}')" 
+                    style="background:#ffa500; color:#000; border:none; border-radius:6px; padding:8px 16px; font-weight:bold; cursor:pointer; width:100%; margin-bottom:8px;">
+                    📧 Send Token to Email
+                </button>
+                <div id="tokenInputDiv" style="display:none; margin-top:8px;">
+                    <input type="text" id="updateToken" placeholder="Enter token from email..." 
+                        style="background:#1a1a1a; border:1px solid #ffa500; color:#e0e0e0; border-radius:6px; padding:8px; width:100%; margin-bottom:8px;">
+                    <button onclick="submitUpdate()" 
+                        style="background:#00bcd4; color:#000; border:none; border-radius:6px; padding:8px 16px; font-weight:bold; cursor:pointer; width:100%;">
+                        ✅ Authorize Update
+                    </button>
+                </div>
+                <div id="updateResult" style="margin-top:8px;"></div>
+            `;
+        } else if (d.status === 'already_signed') {
+            box.className = 'result-box';
+            box.style.background = '#0d1a1f';
+            box.style.border = '1px solid #00bcd4';
+            box.innerHTML = `<div style="color:#00bcd4; font-weight:bold;">ℹ️ Already Signed!</div>
+                <div style="color:#aaa; font-size:0.85rem; margin-top:6px;">${d.message}</div>`;
+        } else {
+            box.className = 'result-box result-error';
+            box.innerHTML = `<div style="color:#ff4444;">⚠️ ${d.message || d.error}</div>`;
+        }
+    } catch(e) { box.innerHTML = 'Error: ' + e.message; }
+}
+
+async function requestTokenForUpdate(email) {
+    if (!email) { alert('Email required!'); return; }
+    try {
+        const res = await fetch('/api/request-token', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({email: email})
+        });
+        const d = await res.json();
+        document.getElementById('tokenInputDiv').style.display = 'block';
+        alert('✅ Token sent to ' + email + '\n\nDev token: ' + d.dev_token);
+    } catch(e) { alert('Error: ' + e.message); }
+}
+
+async function submitUpdate() {
+    const token = document.getElementById('updateToken').value.trim();
+    const email = document.getElementById('studentEmail').value.trim();
+    if (!token) { alert('Enter token!'); return; }
+    if (!selFile2) { alert('File still selected!'); return; }
+    
+    const fd = new FormData();
+    fd.append('file', selFile2);
+    fd.append('email', email);
+    fd.append('token', token);
+    
+    const resultDiv = document.getElementById('updateResult');
+    resultDiv.innerHTML = '<div style="color:#aaa;">⏳ Verifying token...</div>';
+    
+    try {
+        const res = await fetch('/api/update', { method: 'POST', body: fd });
+        const d = await res.json();
+        if (d.status === 'updated') {
+            resultDiv.innerHTML = `<div style="color:#00ff41; font-weight:bold;">✅ Document Updated!</div>
+                <div style="color:#aaa; font-size:0.82rem;">Block #${d.block_index}</div>
+                <div style="font-family:monospace; color:#00ff41; font-size:0.75rem; word-break:break-all;">${d.block_hash}</div>`;
+            loadDocs();
+        } else {
+            resultDiv.innerHTML = `<div style="color:#ff4444; font-weight:bold;">🚨 ${d.message}</div>`;
+        }
+    } catch(e) { resultDiv.innerHTML = '<div style="color:#ff4444;">Error: ' + e.message + '</div>'; }
+}
+
+async function loadDocs() {
+    try {
+        const res = await fetch('/api/search?q=');
+        const docs = await res.json();
+        const tbody = document.getElementById('docsBody');
+        if (!docs.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#444;padding:24px;">No documents found</td></tr>'; return; }
+        tbody.innerHTML = docs.map(d => `
+            <tr>
+                <td>${d.original_name.substring(0,25)}</td>
+                <td style="color:#ffa500">${d.doc_type}</td>
+                <td style="color:#00bcd4">${d.owner_email || 'N/A'}</td>
+                <td style="color:#888">${d.reg_number || 'N/A'}</td>
+                <td style="color:#555; font-size:0.78rem">${d.signed_at.substring(0,10)}</td>
+                <td><span class="badge-${d.status}">${d.status}</span></td>
+                <td>${d.status === 'active' ? `<button class="btn-revoke" onclick="revokeDoc(${d.id})">Revoke</button>` : '-'}</td>
+            </tr>`).join('');
+    } catch(e) {}
+}
+
+async function revokeDoc(id) {
+    if (!confirm('Revoke this document? This cannot be undone.')) return;
+    const res = await fetch(`/api/revoke/${id}`, { method: 'POST' });
+    const d = await res.json();
+    if (d.success) { alert('Document revoked!'); loadDocs(); }
+}
+
+async function loadUsers() {
+    try {
+        const res = await fetch('/api/users');
+        const users = await res.json();
+        document.getElementById('usersBody').innerHTML = users.map(u => `
+            <tr>
+                <td>${u.full_name}</td>
+                <td style="color:#aaa">${u.email}</td>
+                <td><span class="badge-role-${u.role}">${u.role}</span></td>
+                <td style="color:#555">${u.reg_number || '-'}</td>
+                <td style="color:#555">${u.department || '-'}</td>
+                <td><span style="color:${u.is_active ? '#00ff41' : '#ff4444'}">${u.is_active ? 'Active' : 'Inactive'}</span></td>
+                <td><button onclick="toggleUser(${u.id})" style="background:transparent;border:1px solid #333;color:#666;border-radius:6px;padding:3px 10px;font-size:0.75rem;cursor:pointer;">Toggle</button></td>
+            </tr>`).join('');
+    } catch(e) {}
+}
+
+async function toggleUser(id) {
+    const res = await fetch(`/api/users/${id}/toggle`, { method: 'POST' });
+    const d = await res.json();
+    if (d.success) loadUsers();
+}
+
+async function doSearch() {
+    const q = document.getElementById('searchInput').value.trim();
+    const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+    const docs = await res.json();
+    document.getElementById('searchResults').innerHTML = docs.length
+        ? `<table class="table"><thead><tr><th>Document</th><th>Type</th><th>Owner</th><th>Reg#</th><th>Hash</th><th>Status</th></tr></thead><tbody>${
+            docs.map(d => `<tr><td>${d.original_name}</td><td style="color:#ffa500">${d.doc_type}</td><td style="color:#00bcd4">${d.owner_email}</td><td>${d.reg_number||'-'}</td><td class="hash-small">${d.file_hash.substring(0,16)}...</td><td><span class="badge-${d.status}">${d.status}</span></td></tr>`).join('')
+          }</tbody></table>`
+        : '<div style="color:#444; text-align:center; padding:24px;">No results found</div>';
+}
+
+function quickSearch(val) {
+    if (val.length > 2) {
+        showSection('search', document.querySelector('.nav-item:nth-child(8)'));
+        document.getElementById('searchInput').value = val;
+        doSearch();
+    }
+}
+
+async function loadLogs() {
+    try {
+        const res = await fetch('/api/audit-logs');
+        const logs = await res.json();
+        document.getElementById('auditBody').innerHTML = logs.map(l => `
+            <div class="log-item">
+                <span class="log-time">${l.timestamp.substring(11,19)}</span>
+                <span class="log-action">${l.action}</span>
+                <span class="log-detail">${l.details || ''}</span>
+                <span style="margin-left:auto; color:${l.success ? '#00ff41' : '#ff4444'}; font-size:0.75rem;">${l.success ? '✅' : '❌'}</span>
+            </div>`).join('') || '<div style="color:#444;text-align:center;padding:24px;">No logs</div>';
+    } catch(e) {}
+}
+
+async function checkChain() {
+    const res = await fetch('/api/chain-status');
+    const d = await res.json();
+    document.getElementById('chainIcon').textContent = d.valid ? '✅' : '🚨';
+    document.getElementById('chainStatusText').textContent = d.valid ? 'Chain Intact' : 'Chain TAMPERED!';
+    document.getElementById('chainStatusText').style.color = d.valid ? '#00ff41' : '#ff4444';
+    document.getElementById('chainSubtext').textContent = d.status;
+    document.getElementById('cBlocks').textContent = d.length;
+}
+
+setInterval(async () => {
+    const res = await fetch('/api/stats');
+    const d = await res.json();
+    document.getElementById('s-total').textContent = d.total_docs;
+    document.getElementById('s-users').textContent = d.total_users;
+    document.getElementById('s-chain').textContent = d.chain_length;
+}, 10000);
+</script>
+</body>
+</html>

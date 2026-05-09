@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UniVerify — Register</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0a0a0a; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Segoe UI', sans-serif; padding: 20px 0; }
+        .register-wrapper { width: 100%; max-width: 480px; padding: 20px; }
+        .logo-area { text-align: center; margin-bottom: 30px; }
+        .logo-title { color: #00ff41; font-size: 1.8rem; font-weight: 800; letter-spacing: 2px; }
+        .logo-sub { color: #555; font-size: 0.85rem; }
+        .card { background: #111; border: 1px solid #222; border-radius: 16px; padding: 36px; }
+        .card-title { color: #e0e0e0; font-size: 1.3rem; font-weight: 600; margin-bottom: 24px; }
+        .form-label { color: #888; font-size: 0.85rem; margin-bottom: 6px; }
+        .form-control, .form-select { background: #1a1a1a; border: 1px solid #333; color: #e0e0e0; border-radius: 8px; padding: 11px 16px; font-size: 0.9rem; }
+        .form-control:focus, .form-select:focus { background: #1a1a1a; border-color: #00ff41; color: #e0e0e0; box-shadow: 0 0 0 3px rgba(0,255,65,0.1); }
+        .form-select option { background: #1a1a1a; }
+        .role-selector { display: flex; gap: 10px; margin-bottom: 4px; }
+        .role-option { flex: 1; background: #1a1a1a; border: 2px solid #333; border-radius: 8px; padding: 12px 8px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .role-option.selected { border-color: #00ff41; background: #0d1a0d; }
+        .role-option span { display: block; font-size: 1.5rem; margin-bottom: 4px; }
+        .role-option p { color: #888; font-size: 0.78rem; margin: 0; }
+        .role-option.selected p { color: #00ff41; }
+        .btn-register { background: #00ff41; color: #000; font-weight: 700; border: none; border-radius: 8px; padding: 13px; width: 100%; font-size: 1rem; margin-top: 8px; cursor: pointer; }
+        .btn-register:hover { background: #00cc33; }
+        .login-link { text-align: center; margin-top: 20px; }
+        .login-link a { color: #00ff41; text-decoration: none; font-size: 0.9rem; }
+        .alert-error { background: #1f0d0d; border: 1px solid #ff4444; color: #ff6666; border-radius: 8px; padding: 12px; margin-bottom: 20px; font-size: 0.85rem; }
+        .alert-success { background: #0d1f0d; border: 1px solid #00ff41; color: #00ff41; border-radius: 8px; padding: 12px; margin-bottom: 20px; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+<div class="register-wrapper">
+    <div class="logo-area">
+        <div class="logo-title">🎓 UniVerify</div>
+        <div class="logo-sub">Create your account</div>
+    </div>
+    <div class="card">
+        <div class="card-title">Create Account</div>
+        <div id="alertBox"></div>
+
+        <form id="registerForm">
+            <div class="mb-3">
+                <label class="form-label">Select Your Role</label>
+                <div class="role-selector">
+                    <div class="role-option selected" onclick="selectRole('student', this)">
+                        <span>🎓</span><p>Student</p>
+                    </div>
+                    <div class="role-option" onclick="selectRole('verifier', this)">
+                        <span>🔍</span><p>Verifier</p>
+                    </div>
+                    <div class="role-option" onclick="selectRole('admin', this)">
+                        <span>🔐</span><p>Admin</p>
+                    </div>
+                </div>
+                <input type="hidden" id="roleInput" value="student">
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Full Name *</label>
+                    <input type="text" id="full_name" class="form-control" placeholder="Ali Hassan" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Email *</label>
+                    <input type="email" id="email" class="form-control" placeholder="ali@university.edu" required>
+                </div>
+            </div>
+
+            <div class="row" id="studentFields">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Registration Number</label>
+                    <input type="text" id="reg_number" class="form-control" placeholder="2021-CS-001">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Department</label>
+                    <select id="department" class="form-select">
+                        <option value="">Select...</option>
+                        <option>Computer Science</option>
+                        <option>Software Engineering</option>
+                        <option>Electrical Engineering</option>
+                        <option>Business Administration</option>
+                        <option>Mathematics</option>
+                        <option>Physics</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password *</label>
+                <input type="password" id="password" class="form-control" placeholder="Min 6 characters" required>
+            </div>
+
+            <button type="submit" class="btn-register">🚀 Create Account</button>
+        </form>
+
+        <div class="login-link">Already have an account? <a href="/login">Sign in</a></div>
+    </div>
+</div>
+
+<script>
+let selectedRole = 'student';
+
+function selectRole(role, el) {
+    selectedRole = role;
+    document.getElementById('roleInput').value = role;
+    document.querySelectorAll('.role-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('studentFields').style.display = role === 'student' ? 'flex' : 'none';
+}
+
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('full_name', document.getElementById('full_name').value);
+    formData.append('email', document.getElementById('email').value);
+    formData.append('password', document.getElementById('password').value);
+    formData.append('role', selectedRole);
+    formData.append('reg_number', document.getElementById('reg_number').value);
+    formData.append('department', document.getElementById('department').value);
+
+    try {
+        const res = await fetch('/register', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('alertBox').innerHTML = '<div class="alert-success">✅ Account created! Redirecting...</div>';
+            setTimeout(() => window.location.href = '/login', 1500);
+        } else {
+            document.getElementById('alertBox').innerHTML = `<div class="alert-error">⚠️ ${data.error}</div>`;
+        }
+    } catch(e) {
+        window.location.href = '/register';
+    }
+});
+</script>
+</body>
+</html>
