@@ -1,0 +1,10 @@
+Flask
+Flask-Login
+Flask-Mail
+Flask-SQLAlchemy
+gunicorn
+qrcode[pil]
+Pillow
+cryptography
+Werkzeug
+itsdangerous

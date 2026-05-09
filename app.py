@@ -506,13 +506,13 @@ def update_document():
 
 if __name__ == '__main__':
     create_admin()
-    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    ssl_context.load_cert_chain('certs/server.crt', 'certs/server.key')
-    ssl_context.verify_mode = ssl.CERT_OPTIONAL
-    ssl_context.load_verify_locations('certs/ca.crt')
+
+
+
+
     print('🚀 UniVerify running on https://driver-numeral-sandworm.ngrok-free.dev')
     print('👤 Admin: admin@university.edu | Password: Admin@123')
-    app.run(host="0.0.0.0", port=5000, ssl_context=ssl_context, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
 
 @app.route('/api/update', methods=['POST'])
 @login_required
