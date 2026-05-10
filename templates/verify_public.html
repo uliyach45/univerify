@@ -330,6 +330,9 @@ document.addEventListener("DOMContentLoaded",()=>{
     const left=Math.max(0,2-parseInt(cnt));
     const el=document.getElementById("countLeft");
     if(el) el.textContent=left;
+    {% if verified %}
+    let vc=parseInt(localStorage.getItem("uv_verify_count")||0);vc++;localStorage.setItem("uv_verify_count",vc);const left2=Math.max(0,2-vc);if(el)el.textContent=left2;
+    {% endif %}
 });
 
 // QR Camera

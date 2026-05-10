@@ -151,18 +151,18 @@ def verify_public_page():
             file_hash = hashlib.sha256(f.read()).hexdigest()
             block = blockchain.query_by_hash(file_hash)
             doc = Document.query.filter_by(file_hash=file_hash).first()
-            return render_template('verify_public.html', block=block, doc=doc, file_hash=file_hash)
+            return render_template('verify_public.html', block=block, doc=doc, file_hash=file_hash, verified=True)
     file_hash = request.args.get('hash')
     if file_hash:
         block = blockchain.query_by_hash(file_hash)
         doc = Document.query.filter_by(file_hash=file_hash).first()
-        return render_template('verify_public.html', block=block, doc=doc, file_hash=file_hash)
+        return render_template('verify_public.html', block=block, doc=doc, file_hash=file_hash, verified=True)
     return render_template('verify_public.html', block=None, doc=None, file_hash=None)
 @app.route('/public/verify/<file_hash>')
 def public_verify(file_hash):
     block = blockchain.query_by_hash(file_hash)
     doc = Document.query.filter_by(file_hash=file_hash).first()
-    return render_template('verify_public.html', block=block, doc=doc, file_hash=file_hash)
+    return render_template('verify_public.html', block=block, doc=doc, file_hash=file_hash, verified=True)
 
 # ─────────────────────────────────────────────
 # API: SIGN DOCUMENT
