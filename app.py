@@ -509,6 +509,9 @@ def update_document():
         'timestamp': block.timestamp
     })
 
+# Auto-init for gunicorn
+create_admin()
+
 if __name__ == '__main__':
     create_admin()
 
