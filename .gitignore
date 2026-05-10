@@ -12,3 +12,4 @@ token_store.pkl
 *.srl
 *.p12
 .env
+uploads/
