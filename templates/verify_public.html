@@ -330,7 +330,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     const left=Math.max(0,2-parseInt(cnt));
     const el=document.getElementById("countLeft");
     if(el) el.textContent=left;
-    if(left<=0){document.getElementById("verifyBtn").disabled=true;document.getElementById("hashBtn").disabled=true;document.querySelector(".upload-zone").style.pointerEvents="none";document.querySelector(".upload-zone").style.opacity="0.4";document.getElementById("freeCounter").innerHTML="<span>Free limit reached &nbsp;·&nbsp; <a href="/login" style="color:#60a5fa;">Log in for unlimited access</a></span>";}
+    if(left<=0){document.getElementById("verifyBtn").disabled=true;document.getElementById("hashBtn").disabled=true;document.querySelector(".upload-zone").style.pointerEvents="none";document.querySelector(".upload-zone").style.opacity="0.4";}
     {% if verified %}
     let vc=parseInt(localStorage.getItem("uv_verify_count")||0);vc++;localStorage.setItem("uv_verify_count",vc);const left2=Math.max(0,2-vc);if(el)el.textContent=left2;
     {% endif %}
