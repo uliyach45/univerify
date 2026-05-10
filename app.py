@@ -44,7 +44,7 @@ def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def generate_qr(doc_id, file_hash):
-    verify_url = f"https://driver-numeral-sandworm.ngrok-free.dev/public/verify/{file_hash}"
+    verify_url = f"https://uliyach45-univerify.hf.space/public/verify/{file_hash}"
     qr = qrcode.QRCode(version=1, box_size=8, border=4)
     qr.add_data(verify_url)
     qr.make(fit=True)
@@ -62,7 +62,7 @@ def generate_qr(doc_id, file_hash):
 def login_qr():
     import qrcode, io
     from flask import send_file
-    login_url = "https://driver-numeral-sandworm.ngrok-free.dev/login"
+    login_url = "https://uliyach45-univerify.hf.space/login"
     qr = qrcode.QRCode(version=1, box_size=8, border=4)
     qr.add_data(login_url)
     qr.make(fit=True)
@@ -77,7 +77,7 @@ def login_qr():
 def verify_qr():
     import qrcode, io
     from flask import send_file
-    url = "https://driver-numeral-sandworm.ngrok-free.dev/verify_public"
+    url = "https://uliyach45-univerify.hf.space/verify_public"
     qr = qrcode.QRCode(version=1, box_size=8, border=4)
     qr.add_data(url)
     qr.make(fit=True)
@@ -513,6 +513,6 @@ if __name__ == '__main__':
 
 
 
-    print('🚀 UniVerify running on https://driver-numeral-sandworm.ngrok-free.dev')
+    print('🚀 UniVerify running on https://uliyach45-univerify.hf.space')
     print('👤 Admin: admin@university.edu | Password: Admin@123')
     app.run(host="0.0.0.0", port=5000, debug=False)
