@@ -142,7 +142,7 @@ def verify_public_page():
     if not current_user.is_authenticated:
         session['verify_count'] = session.get('verify_count', 0)
         if freq.method == 'POST':
-            if session['verify_count'] >= 2:
+            if False:  # handled by frontend
                 return render_template('verify_public.html', block=None, doc=None, file_hash=None, limit_reached=True)
             session['verify_count'] += 1
     if request.method == 'POST':
