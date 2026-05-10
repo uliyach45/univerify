@@ -330,7 +330,7 @@ document.addEventListener("DOMContentLoaded",()=>{
     const left=Math.max(0,2-parseInt(cnt));
     const el=document.getElementById("countLeft");
     if(el) el.textContent=left;
-    if(left<=0){document.getElementById('verifyBtn').disabled=true;document.getElementById('hashBtn').disabled=true;document.querySelector('.upload-zone').style.pointerEvents='none';document.querySelector('.upload-zone').style.opacity='0.4';}
+    if(left<=0){document.getElementById('verifyBtn').disabled=true;document.getElementById('hashBtn').disabled=true;document.querySelector('.upload-zone').style.pointerEvents='none';document.querySelector('.upload-zone').style.opacity='0.4';document.getElementById('freeCounter').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>Free limit reached if(left<=0){document.getElementById('verifyBtn').disabled=true;document.getElementById('hashBtn').disabled=true;document.querySelector('.upload-zone').style.pointerEvents='none';document.querySelector('.upload-zone').style.opacity='0.4';}nbsp;·if(left<=0){document.getElementById('verifyBtn').disabled=true;document.getElementById('hashBtn').disabled=true;document.querySelector('.upload-zone').style.pointerEvents='none';document.querySelector('.upload-zone').style.opacity='0.4';}nbsp; <a href="/login" style="color:#60a5fa;">Log in for unlimited access</a></span>';}
     {% if verified %}
     let vc=parseInt(localStorage.getItem("uv_verify_count")||0);vc++;localStorage.setItem("uv_verify_count",vc);const left2=Math.max(0,2-vc);if(el)el.textContent=left2;
     {% endif %}
