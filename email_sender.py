@@ -51,7 +51,7 @@ Do NOT share this with anyone.
     msg["Subject"] = "Document Update Token - Action Required"
     msg["From"] = SMTP_EMAIL
     msg["To"] = to_email
-    with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+    with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10) as server:
         server.ehlo()
         server.starttls()
         server.login(SMTP_EMAIL, SMTP_PASSWORD)

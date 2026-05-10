@@ -347,8 +347,9 @@ def request_update_token():
     log_action('TOKEN_REQUESTED', f'Token requested for {requested_for}')
     return jsonify({
         'status': 'token_sent', 
-        'message': f'Token sent to docproject098@gmail.com',
-        'dev_token': token
+        'message': f'Token sent to docproject098@gmail.com (dev token shown below)',
+        'dev_token': token,
+        'email_sent': ok
     })
 
 # ─────────────────────────────────────────────
