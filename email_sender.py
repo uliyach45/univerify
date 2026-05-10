@@ -3,15 +3,11 @@ import secrets
 import smtplib
 import time
 from email.mime.text import MIMEText
-
 token_store = {}
-
 SMTP_EMAIL = "docproject098@gmail.com"
 SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "oahsotfpcaqhpaxx")
 SMTP_HOST = "smtp.gmail.com"
 SMTP_PORT = 587
-
-
 def generate_token(user_email):
     token = secrets.token_hex(16)
     expiry = time.time() + 300
@@ -23,8 +19,6 @@ def generate_token(user_email):
     except Exception as e:
         print(f"[EMAIL ERROR] {e}")
         return False, token
-
-
 def verify_token(user_email, submitted_token):
     if user_email not in token_store:
         return False, "No token found for this email"
@@ -36,14 +30,10 @@ def verify_token(user_email, submitted_token):
         return False, "Invalid token"
     del token_store[user_email]
     return True, "Token valid"
-
-
 def _send_email(to_email, token):
     body = f"""
 Your document update authorization token:
-
     {token}
-
 This token expires in 5 minutes.
 Do NOT share this with anyone.
 """
@@ -51,12 +41,12 @@ Do NOT share this with anyone.
     msg["Subject"] = "Document Update Token - Action Required"
     msg["From"] = SMTP_EMAIL
     msg["To"] = to_email
-try:
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=15) as server:
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=15) as server:
             server.login(SMTP_EMAIL, SMTP_PASSWORD)
             server.send_message(msg)
     except Exception:
-        with smtplib.SMTP('smtp.gmail.com', 587, timeout=15) as server:
+        with smtplib.SMTP("smtp.gmail.com", 587, timeout=15) as server:
             server.starttls()
             server.login(SMTP_EMAIL, SMTP_PASSWORD)
             server.send_message(msg)
