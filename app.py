@@ -516,6 +516,3 @@ if __name__ == '__main__':
     print('🚀 UniVerify running on https://driver-numeral-sandworm.ngrok-free.dev')
     print('👤 Admin: admin@university.edu | Password: Admin@123')
     app.run(host="0.0.0.0", port=5000, debug=False)
-
-@app.route('/api/update', methods=['POST'])
-@login_required
