@@ -510,7 +510,8 @@ def update_document():
     })
 
 # Auto-init for gunicorn
-create_admin()
+import threading
+threading.Thread(target=create_admin, daemon=True).start()
 
 if __name__ == '__main__':
     create_admin()
