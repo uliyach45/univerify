@@ -2,14 +2,8 @@
 __pycache__/
 univerify.db
 blockchain.json
-certs/
 uploads/
 static/qrcodes/
 token_store.pkl
-*.key
-*.crt
-*.csr
-*.srl
-*.p12
 .env
 uploads/
