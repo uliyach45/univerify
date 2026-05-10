@@ -217,7 +217,7 @@ def sign_document():
 
     signature = sign_file_hash(file_hash, USER_KEY_PATH)
 
-    save_path = os.path.join('uploads', filename)
+    save_path = os.path.join('/tmp/uploads', filename)
     with open(save_path, 'wb') as f:
         f.write(file_bytes)
 
@@ -476,7 +476,7 @@ def update_document():
             cert_pem = f2.read()
         fingerprint = get_cert_fingerprint(cert_pem)
     signature = sign_file_hash(file_hash, USER_KEY_PATH)
-    save_path = os.path.join('uploads', filename)
+    save_path = os.path.join('/tmp/uploads', filename)
     with open(save_path, 'wb') as f2:
         f2.write(file_bytes)
     block = blockchain.add_block(
