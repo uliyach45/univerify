@@ -15,14 +15,14 @@ from email_sender import generate_token, verify_token
 app = Flask(__name__)
 app.secret_key = "univerify_super_secret_2026"
 import os
-os.makedirs('/tmp/data', exist_ok=True)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/data/univerify.db'
+# db in app root
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///univerify.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
-app.config['QR_FOLDER'] = '/tmp/static/qrcodes'
+app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['QR_FOLDER'] = 'static/qrcodes'
 
-os.makedirs('/tmp/static/qrcodes', exist_ok=True)
-os.makedirs('/tmp/uploads', exist_ok=True)
+os.makedirs('static/qrcodes', exist_ok=True)
+os.makedirs('uploads', exist_ok=True)
 
 db.init_app(app)
 login_manager = LoginManager()
@@ -217,7 +217,7 @@ def sign_document():
 
     signature = sign_file_hash(file_hash, USER_KEY_PATH)
 
-    save_path = os.path.join('/tmp/uploads', filename)
+    save_path = os.path.join('uploads', filename)
     with open(save_path, 'wb') as f:
         f.write(file_bytes)
 
@@ -476,7 +476,7 @@ def update_document():
             cert_pem = f2.read()
         fingerprint = get_cert_fingerprint(cert_pem)
     signature = sign_file_hash(file_hash, USER_KEY_PATH)
-    save_path = os.path.join('/tmp/uploads', filename)
+    save_path = os.path.join('uploads', filename)
     with open(save_path, 'wb') as f2:
         f2.write(file_bytes)
     block = blockchain.add_block(
