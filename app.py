@@ -14,7 +14,9 @@ from email_sender import generate_token, verify_token
 
 app = Flask(__name__)
 app.secret_key = "univerify_super_secret_2026"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///univerify.db'
+import os
+os.makedirs('/data', exist_ok=True)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////data/univerify.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['QR_FOLDER'] = 'static/qrcodes'
