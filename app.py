@@ -15,14 +15,14 @@ from email_sender import generate_token, verify_token
 app = Flask(__name__)
 app.secret_key = "univerify_super_secret_2026"
 import os
-os.makedirs('./data', exist_ok=True)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./data/univerify.db'
+os.makedirs('/tmp/data', exist_ok=True)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/data/univerify.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'uploads'
-app.config['QR_FOLDER'] = 'static/qrcodes'
+app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
+app.config['QR_FOLDER'] = '/tmp/static/qrcodes'
 
-os.makedirs('static/qrcodes', exist_ok=True)
-os.makedirs('uploads', exist_ok=True)
+os.makedirs('/tmp/static/qrcodes', exist_ok=True)
+os.makedirs('/tmp/uploads', exist_ok=True)
 
 db.init_app(app)
 login_manager = LoginManager()
