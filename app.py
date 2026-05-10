@@ -1,4 +1,7 @@
 import os, ssl, qrcode
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 from flask import Flask, request, jsonify, render_template, redirect, url_for, send_from_directory
 from flask_login import LoginManager, login_required, current_user
 from werkzeug.utils import secure_filename
