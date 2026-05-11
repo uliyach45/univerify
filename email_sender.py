@@ -1,14 +1,13 @@
 import os
 import secrets
 import time
-import urllib.request
-import urllib.error
-import json
+import smtplib
+from email.mime.text import MIMEText
 
 token_store = {}
 
-RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "re_XKTw2VHX_88ferwxzsqdHJJbZSqhAZyMc")
-FROM_EMAIL = "onboarding@resend.dev"
+SMTP_EMAIL = os.environ.get("SMTP_EMAIL", "docproject098@gmail.com")
+SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "oahsotfpcaqhpaxx")
 
 def generate_token(user_email):
     token = secrets.token_hex(16)
@@ -35,22 +34,21 @@ def verify_token(user_email, submitted_token):
     return True, "Token valid"
 
 def _send_email(to_email, token):
-    payload = json.dumps({
-        "from": FROM_EMAIL,
-        "to": [to_email],
-        "subject": "Document Update Token - Action Required",
-        "text": f"Your document update authorization token:\n\n    {token}\n\nThis token expires in 5 minutes.\nDo NOT share this with anyone."
-    }).encode("utf-8")
+    body = f"""Your document update authorization token:
 
-    req = urllib.request.Request(
-        "https://api.resend.com/emails",
-        data=payload,
-        headers={
-            "Authorization": f"Bearer {RESEND_API_KEY}",
-            "Content-Type": "application/json"
-        },
-        method="POST"
-    )
-    with urllib.request.urlopen(req, timeout=15) as resp:
-        result = json.loads(resp.read())
-        print(f"[RESEND] {result}")
+    {token}
+
+This token expires in 5 minutes.
+Do NOT share this with anyone."""
+
+    msg = MIMEText(body)
+    msg["Subject"] = "Document Update Token - Action Required"
+    msg["From"] = SMTP_EMAIL
+    msg["To"] = to_email
+
+    with smtplib.SMTP("smtp.gmail.com", 587, timeout=30) as server:
+        server.ehlo()
+        server.starttls()
+        server.ehlo()
+        server.login(SMTP_EMAIL, SMTP_PASSWORD)
+        server.send_message(msg)
