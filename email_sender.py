@@ -4,7 +4,7 @@ import smtplib
 import time
 from email.mime.text import MIMEText
 token_store = {}
-SMTP_EMAIL = "docproject098@gmail.com"
+SMTP_EMAIL = os.environ.get("SMTP_EMAIL", "docproject098@gmail.com")
 SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "oahsotfpcaqhpaxx")
 SMTP_HOST = "smtp.gmail.com"
 SMTP_PORT = 587
