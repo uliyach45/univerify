@@ -2,6 +2,8 @@ Flask==3.0.3
 flask-login==0.6.3
 flask-mail==0.10.0
 flask-sqlalchemy==3.1.1
+flask-cors==4.0.0
+python-multipart==0.0.6
 gunicorn==21.2.0
 qrcode[pil]==7.4.2
 Pillow==10.4.0
@@ -9,3 +11,4 @@ cryptography==42.0.8
 Werkzeug==3.0.3
 itsdangerous==2.2.0
 SQLAlchemy==2.0.30
+email-validator==2.1.0
