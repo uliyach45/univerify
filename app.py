@@ -210,7 +210,11 @@ def sign_document():
     if not student:
         return jsonify({'error': 'Student not found'}), 404
 
-    cert_pem, fingerprint, _ = extract_cert_from_request(request)
+    try:
+        cert_pem, fingerprint, _ = extract_cert_from_request(request)
+    except Exception as e:
+        cert_pem, fingerprint = None, None
+        print(f"Cert extraction error: {e}")
     if not fingerprint:
         if CERTS_AVAILABLE:
             with open(USER_CERT_PATH, 'rb') as f:
@@ -222,9 +226,14 @@ def sign_document():
 
     signature = sign_file_hash(file_hash, USER_KEY_PATH) if CERTS_AVAILABLE else __import__("hashlib").sha256(file_hash.encode()).hexdigest()
 
+    os.makedirs('uploads', exist_ok=True)
     save_path = os.path.join('uploads', filename)
-    with open(save_path, 'wb') as f:
-        f.write(file_bytes)
+    try:
+        with open(save_path, 'wb') as f:
+            f.write(file_bytes)
+    except Exception as e:
+        print(f"File save error: {e}")
+        save_path = filename
 
     block = blockchain.add_block(
         filename=filename, file_hash=file_hash,
@@ -476,7 +485,11 @@ def update_document():
     filename = secure_filename(file.filename)
     existing = Document.query.filter_by(filename=filename).first()
     parent_hash = existing.block_hash if existing else None
-    cert_pem, fingerprint, _ = extract_cert_from_request(request)
+    try:
+        cert_pem, fingerprint, _ = extract_cert_from_request(request)
+    except Exception as e:
+        cert_pem, fingerprint = None, None
+        print(f"Cert extraction error: {e}")
     if not fingerprint:
         if CERTS_AVAILABLE:
             with open(USER_CERT_PATH, 'rb') as f2:
