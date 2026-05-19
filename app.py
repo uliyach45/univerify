@@ -1,9 +1,10 @@
-import os, ssl, qrcode
+import os, ssl, qrcode, time
 import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 from flask import Flask, request, jsonify, render_template, redirect, url_for, send_from_directory
 from flask_login import LoginManager, login_required, current_user
+from flask_cors import CORS  # Add this
 from werkzeug.utils import secure_filename
 from datetime import datetime, timezone, timedelta
 from models import db, User, Document, AuditLog
@@ -13,6 +14,19 @@ from tls_auth import compute_file_hash, sign_file_hash, get_cert_fingerprint, ex
 from email_sender import generate_token, verify_token
 
 app = Flask(__name__)
+
+CORS(app)
+
+os.makedirs('uploads', exist_ok=True)
+os.makedirs('instance', exist_ok=True)
+
+@app.route('/api/health', methods=['GET'])
+def health():
+    return jsonify({
+        "status": "ok",
+        "message": "Server is running",
+        "timestamp": time.time()
+    })
 app.secret_key = "univerify_super_secret_2026"
 import os
 # db in app root
